@@ -1,78 +1,88 @@
 # Blog & Portofolio — Ahmad Riza Rudi
 
-Website pribadi (blog + portofolio) yang dibangun **fullstack** pakai
-**Node.js + Express + EJS + SQLite**.
+Website pribadi (blog + portofolio) **fullstack** pakai
+**Node.js + Express + EJS + libSQL/SQLite (Turso)**.
 
 ## Fitur
 
 - 🏠 **Home** — perkenalan, proyek unggulan, tulisan terbaru
 - 👤 **About** — profil singkat
-- 💼 **Projects** — daftar proyek + halaman detail (Anto Computer, Pacar AI, Ebook)
-- 📝 **Blog** — artikel tersimpan di database SQLite, bisa difilter per tag
+- 💼 **Projects** — daftar proyek + detail (Anto Computer, Pacar AI, Ebook)
+- 📝 **Blog** — artikel tersimpan di database, bisa difilter per tag
 - 📖 **Ebook** — baca "Otak yang Mudah Dibodohi" online, per bab
 - ✉️ **Contact** — form yang menyimpan pesan ke database
 - 🌗 **Dark mode** — tersimpan otomatis, ikut preferensi sistem
 
 ## Teknologi
 
-| Bagian      | Dipakai                          |
-| ----------- | -------------------------------- |
-| Server      | Express                          |
-| Templating  | EJS                              |
-| Database    | SQLite (lewat `node:sqlite` bawaan Node) |
-| Markdown    | marked                           |
+| Bagian     | Dipakai                                   |
+| ---------- | ----------------------------------------- |
+| Server     | Express                                   |
+| Templating | EJS                                       |
+| Database   | libSQL (`@libsql/client`) — file lokal / Turso |
+| Markdown   | marked                                    |
 
-> Database pakai **`node:sqlite`** — modul bawaan Node.js, jadi **tidak perlu**
-> install native module / compiler apa pun. Butuh Node.js **versi 22.5 ke atas**.
+**Database satu driver, dua mode:**
 
-## Menjalankan
+- **Lokal** → otomatis pakai file `db/blog.db` (tanpa setup apa pun).
+- **Produksi** → pakai **Turso** (SQLite online) lewat environment variable.
+
+## Menjalankan Lokal
 
 ```bash
-npm install      # install express, ejs, marked
-npm run dev      # mode development (auto-restart saat file berubah)
+npm install
+npm run dev      # development (auto-restart) -> http://localhost:3000
 # atau
-npm start        # mode biasa
+npm start
 ```
 
-Buka **http://localhost:3000**. File database `db/blog.db` dibuat otomatis
-saat pertama jalan, lengkap dengan artikel awal.
+File `db/blog.db` dibuat otomatis + diisi artikel awal saat pertama jalan.
 
 ## Struktur Folder
 
 ```
 riza-blog/
-├── server.js              # titik masuk: setup Express + routing
-├── routes/                # route per bagian
-│   ├── main.js            #   Beranda, Tentang, Kontak
-│   ├── blog.js            #   Blog & artikel
-│   ├── projects.js        #   Portofolio
-│   └── ebook.js           #   Baca ebook online
+├── app.js                 # bikin & export aplikasi Express (tanpa listen)
+├── server.js              # menjalankan app secara lokal (app.listen)
+├── api/index.js           # entry point untuk Vercel (serverless)
+├── vercel.json            # konfigurasi deploy Vercel
+├── routes/                # main, blog, projects, ebook
 ├── db/
-│   ├── database.js        # koneksi & query SQLite (node:sqlite)
+│   ├── database.js        # koneksi & query libSQL (file lokal / Turso)
 │   └── seed-data.js       # artikel awal
-├── data/projects.js       # daftar proyek
-├── content/ebook/         # isi ebook (index.js + bab-*.md)
+├── data/                  # projects.js, social.js
+├── content/ebook/         # index.js + bab-*.md
 ├── lib/markdown.js        # Markdown -> HTML
 ├── views/                 # template EJS (+ partials/)
 └── public/                # css & js statis
-    ├── css/style.css
-    └── js/main.js
 ```
 
-## Cara Menambah Artikel
+## Deploy ke Vercel + Turso
 
-Artikel disimpan di tabel `articles` (SQLite). Untuk awal, daftar artikel ada di
-[`db/seed-data.js`](db/seed-data.js). Menambah artikel baru bisa dengan:
+1. **Buat database Turso** (sekali saja):
+   ```bash
+   # pakai Turso CLI, atau lewat dashboard turso.tech
+   turso db create blog-pribadi
+   turso db show blog-pribadi --url        # -> TURSO_DATABASE_URL
+   turso db tokens create blog-pribadi     # -> TURSO_AUTH_TOKEN
+   ```
+2. **Push kode ke GitHub.**
+3. **Import repo ke Vercel** (vercel.com → New Project → pilih repo).
+4. **Set Environment Variables** di Vercel (Settings → Environment Variables):
+   - `TURSO_DATABASE_URL` = `libsql://...turso.io`
+   - `TURSO_AUTH_TOKEN` = token dari langkah 1
+5. **Deploy.** Tabel & artikel awal dibuat otomatis saat pertama diakses.
 
-1. Menambah entri di `db/seed-data.js` (lalu hapus `db/blog.db` agar di-seed ulang), atau
-2. Insert langsung ke database, atau
-3. (Pengembangan lanjut) bikin halaman admin untuk menulis artikel.
+> Tabel dibuat otomatis (idempoten) — tidak perlu migrasi manual.
 
-Format `body` artikel memakai **Markdown**.
+## Menambah Artikel
 
-## Cara Mengisi Ebook
+Artikel awal ada di [`db/seed-data.js`](db/seed-data.js) (format `body` = Markdown).
+Untuk seterusnya bisa insert langsung ke database, atau (pengembangan lanjut)
+bikin halaman admin.
 
-Tiap bab ada di file Markdown terpisah di `content/ebook/` (`bab-01.md` … `bonus.md`).
-Daftar & urutan bab diatur di `content/ebook/index.js`. Saat ini berisi
-ringkasan + kerangka tiap bab — kamu bisa menempel naskah lengkapmu langsung
-ke masing-masing file `.md`.
+## Mengisi Ebook
+
+Tiap bab = satu file Markdown di `content/ebook/` (`bab-01.md` … `bonus.md`),
+diurutkan di `content/ebook/index.js`. Saat ini berisi ringkasan + kerangka tiap
+bab; naskah lengkap bisa ditempel langsung ke file `.md`-nya.

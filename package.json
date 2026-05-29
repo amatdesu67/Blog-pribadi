@@ -4,13 +4,14 @@
   "description": "Blog & portofolio pribadi Ahmad Riza Rudi",
   "main": "server.js",
   "scripts": {
-    "start": "node --disable-warning=ExperimentalWarning server.js",
-    "dev": "node --disable-warning=ExperimentalWarning --watch server.js"
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --env-file-if-exists=.env --watch server.js"
   },
-  "keywords": ["blog", "portfolio", "express", "ejs", "sqlite"],
+  "keywords": ["blog", "portfolio", "express", "ejs", "sqlite", "turso"],
   "author": "Ahmad Riza Rudi",
   "license": "MIT",
   "dependencies": {
+    "@libsql/client": "^0.17.3",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "marked": "^14.1.4"
