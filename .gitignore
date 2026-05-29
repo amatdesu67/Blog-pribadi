@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Database SQLite (dibuat otomatis saat server jalan)
+db/blog.db
+db/*.db
+db/*.db-shm
+db/*.db-wal
+
+# Lain-lain
+.env
+npm-debug.log*
+.DS_Store

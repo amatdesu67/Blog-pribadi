@@ -1,0 +1,70 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main>
+  <!-- HERO -->
+  <section class="hero container">
+    <p class="eyebrow">Halo, namaku</p>
+    <h1>Ahmad Riza Rudi</h1>
+    <p class="hero-lead">
+      Siswa SMK jurusan TKJ, 18 tahun. Lagi serius belajar bikin web
+      (Node.js, Express, SQLite) dan suka menulis. Ini tempatku menaruh
+      proyek dan catatan belajar.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="/projects">Lihat Projects</a>
+      <a class="btn btn-ghost" href="/contact">Hubungi Aku</a>
+    </div>
+  </section>
+
+  <!-- PROYEK UNGGULAN -->
+  <section class="container section">
+    <div class="section-head">
+      <h2>Proyek Unggulan</h2>
+      <a href="/projects" class="link-more">Semua proyek →</a>
+    </div>
+    <div class="card-grid">
+      <% projects.forEach(function (p) { %>
+        <a class="card project-card" href="/projects/<%= p.slug %>">
+          <span class="badge"><%= p.type %></span>
+          <h3><%= p.title %></h3>
+          <p><%= p.summary %></p>
+          <div class="tag-row">
+            <% p.tags.slice(0, 3).forEach(function (t) { %><span class="tag"><%= t %></span><% }) %>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  </section>
+
+  <!-- SOROTAN EBOOK -->
+  <section class="container section">
+    <div class="ebook-highlight">
+      <div>
+        <p class="eyebrow">Ebook karyaku</p>
+        <h2><%= ebook.title %></h2>
+        <p><%= ebook.subtitle %></p>
+      </div>
+      <a class="btn btn-primary" href="/ebook">Baca online →</a>
+    </div>
+  </section>
+
+  <!-- ARTIKEL TERBARU -->
+  <section class="container section">
+    <div class="section-head">
+      <h2>Tulisan Terbaru</h2>
+      <a href="/blog" class="link-more">Semua tulisan →</a>
+    </div>
+    <div class="article-list">
+      <% articles.forEach(function (a) { %>
+        <a class="article-item" href="/blog/<%= a.slug %>">
+          <time><%= formatTanggal(a.created_at) %></time>
+          <h3><%= a.title %></h3>
+          <p><%= a.excerpt %></p>
+        </a>
+      <% }) %>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

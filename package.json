@@ -1,0 +1,18 @@
+{
+  "name": "riza-blog",
+  "version": "1.0.0",
+  "description": "Blog & portofolio pribadi Ahmad Riza Rudi",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch server.js"
+  },
+  "keywords": ["blog", "portfolio", "express", "ejs", "sqlite"],
+  "author": "Ahmad Riza Rudi",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "marked": "^14.1.4"
+  }
+}

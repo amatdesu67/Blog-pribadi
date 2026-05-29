@@ -1,0 +1,308 @@
+/* ===========================================================
+   style.css — tampilan blog Ahmad Riza Rudi
+   Tema (terang/gelap) diatur lewat atribut [data-theme] di <html>.
+   Warna disimpan sebagai CSS variable biar gampang diubah.
+   =========================================================== */
+
+/* ---------- Variabel warna: TEMA TERANG (default) ---------- */
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f5f6f8;
+  --surface: #ffffff;
+  --text: #1b1d24;
+  --text-soft: #565c6b;
+  --muted: #8b909c;
+  --border: #e6e8ec;
+  --accent: #6d5efc;
+  --accent-soft: #efedff;
+  --accent-ink: #ffffff;
+  --shadow: 0 1px 2px rgba(20, 22, 30, 0.06), 0 8px 24px rgba(20, 22, 30, 0.05);
+  --radius: 14px;
+  --maxw: 880px;
+}
+
+/* ---------- TEMA GELAP ---------- */
+[data-theme="dark"] {
+  --bg: #0e0f13;
+  --bg-soft: #15171d;
+  --surface: #15171d;
+  --text: #e9eaee;
+  --text-soft: #a6abb8;
+  --muted: #757b89;
+  --border: #262a33;
+  --accent: #8b7dff;
+  --accent-soft: #1d1b33;
+  --accent-ink: #0e0f13;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Reset ringan & dasar ---------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+
+/* ---------- Header & navigasi ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+.logo { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; }
+.logo span { color: var(--accent); }
+
+.nav { display: flex; align-items: center; gap: 6px; }
+.nav a {
+  padding: 8px 12px;
+  border-radius: 9px;
+  font-size: 0.93rem;
+  font-weight: 500;
+  color: var(--text-soft);
+  transition: background 0.15s, color 0.15s;
+}
+.nav a:hover { color: var(--text); background: var(--bg-soft); }
+.nav a.is-active { color: var(--accent); background: var(--accent-soft); }
+
+/* Tombol ganti tema */
+.theme-toggle {
+  width: 38px; height: 38px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+.theme-toggle:hover { border-color: var(--accent); }
+[data-theme="light"] .theme-toggle::before { content: "🌙"; }
+[data-theme="dark"] .theme-toggle::before { content: "☀️"; }
+
+/* Tombol menu (hamburger) — disembunyikan di desktop */
+.nav-toggle { display: none; flex-direction: column; gap: 5px; width: 40px; height: 40px;
+  background: none; border: 0; cursor: pointer; align-items: center; justify-content: center; }
+.nav-toggle span { width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: 0.2s; }
+
+/* ---------- Tombol ---------- */
+.btn {
+  display: inline-block;
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.08s ease, opacity 0.15s, background 0.15s;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { opacity: 0.9; }
+.btn-ghost { background: transparent; border-color: var(--border); color: var(--text); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---------- Hero ---------- */
+.hero { padding: 72px 20px 48px; }
+.eyebrow { color: var(--accent); font-weight: 600; font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 800; letter-spacing: -0.03em; margin: 8px 0 16px; }
+.hero-lead { font-size: 1.15rem; color: var(--text-soft); max-width: 600px; }
+.hero-actions { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+
+/* ---------- Section umum ---------- */
+.section { padding: 28px 20px; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
+.section-head h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+.link-more { color: var(--accent); font-weight: 600; font-size: 0.9rem; }
+.link-more:hover { text-decoration: underline; }
+
+/* ---------- Kartu & grid ---------- */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+.card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  transition: transform 0.12s ease, border-color 0.15s, box-shadow 0.15s;
+}
+.card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: var(--shadow); }
+.project-card h3 { font-size: 1.2rem; margin: 12px 0 6px; letter-spacing: -0.01em; }
+.project-card p { color: var(--text-soft); font-size: 0.95rem; }
+
+.badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 4px 9px;
+  border-radius: 999px;
+}
+
+/* ---------- Tag ---------- */
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.tag {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+a.tag:hover { border-color: var(--accent); color: var(--accent); }
+.tag.is-active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.tag-sm { font-size: 0.75rem; padding: 2px 8px; }
+.tag-count { opacity: 0.6; }
+.tag-filter { margin: 8px 0 28px; }
+
+/* ---------- Sorotan ebook ---------- */
+.ebook-highlight {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  background: linear-gradient(135deg, var(--accent-soft), var(--surface));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+.ebook-highlight h2 { font-size: 1.4rem; margin: 6px 0; letter-spacing: -0.02em; }
+.ebook-highlight p { color: var(--text-soft); }
+
+/* ---------- Daftar artikel ---------- */
+.article-list { display: flex; flex-direction: column; gap: 4px; }
+.article-item {
+  display: block;
+  padding: 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  transition: background 0.15s, border-color 0.15s;
+}
+.article-item:hover { background: var(--surface); border-color: var(--border); }
+.article-item time { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.article-item h3 { font-size: 1.25rem; margin: 6px 0; letter-spacing: -0.01em; }
+.article-item p { color: var(--text-soft); font-size: 0.96rem; }
+
+/* ---------- Halaman umum ---------- */
+.page { padding: 48px 20px 72px; }
+.page h1 { font-size: clamp(2rem, 5vw, 2.7rem); font-weight: 800; letter-spacing: -0.03em; }
+.page-lead { color: var(--text-soft); font-size: 1.1rem; margin: 10px 0 28px; }
+.muted { color: var(--muted); }
+.back-link { display: inline-block; color: var(--text-soft); font-size: 0.9rem; margin-bottom: 24px; }
+.back-link:hover { color: var(--accent); }
+
+/* ---------- Prose (isi artikel & ebook) ---------- */
+.prose { color: var(--text-soft); font-size: 1.05rem; line-height: 1.75; }
+.prose > * + * { margin-top: 1.1rem; }
+.prose h1, .prose h2, .prose h3 { color: var(--text); letter-spacing: -0.02em; line-height: 1.3; }
+.prose h2 { font-size: 1.5rem; margin-top: 2rem; }
+.prose h3 { font-size: 1.2rem; margin-top: 1.6rem; }
+.prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.prose strong { color: var(--text); }
+.prose ul, .prose ol { padding-left: 1.4rem; }
+.prose li { margin-top: 0.4rem; }
+.prose blockquote {
+  border-left: 3px solid var(--accent);
+  background: var(--bg-soft);
+  padding: 14px 18px;
+  border-radius: 0 10px 10px 0;
+  color: var(--text);
+}
+.prose blockquote h3 { margin-top: 0; }
+.prose code {
+  background: var(--bg-soft); border: 1px solid var(--border);
+  padding: 1px 6px; border-radius: 6px; font-size: 0.9em;
+}
+.prose pre { background: #11131a; color: #e7e9f0; padding: 16px; border-radius: 12px; overflow-x: auto; }
+.prose pre code { background: none; border: 0; padding: 0; color: inherit; }
+.article-header, .chapter-header { margin-bottom: 28px; }
+.article-header time { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; }
+.article-header h1, .chapter-header h1 { margin: 8px 0 14px; }
+
+/* ---------- Ebook: cover, daftar isi, navigasi ---------- */
+.ebook-reader { max-width: 720px; }
+.ebook-cover {
+  text-align: center; padding: 40px 20px;
+  background: linear-gradient(135deg, var(--accent-soft), var(--surface));
+  border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 36px;
+}
+.toc-title { font-size: 1.3rem; margin-bottom: 12px; }
+.toc { list-style: none; counter-reset: none; margin-bottom: 28px; }
+.toc li { border-bottom: 1px solid var(--border); }
+.toc a { display: flex; align-items: center; gap: 14px; padding: 14px 6px; transition: padding 0.15s, color 0.15s; }
+.toc a:hover { padding-left: 14px; color: var(--accent); }
+.toc-num { color: var(--accent); font-weight: 700; min-width: 26px; }
+.toc-text { font-weight: 500; }
+
+.chapter-nav { display: flex; justify-content: space-between; gap: 14px; margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); }
+.chapter-nav-item { display: flex; flex-direction: column; gap: 4px; max-width: 48%; padding: 14px 18px; border: 1px solid var(--border); border-radius: 12px; transition: border-color 0.15s; }
+.chapter-nav-item:hover { border-color: var(--accent); }
+.chapter-nav-item span { font-size: 0.8rem; color: var(--muted); }
+.chapter-nav-item.next { text-align: right; margin-left: auto; }
+.chapter-nav-item strong { color: var(--text); font-size: 0.95rem; }
+
+/* ---------- Form & alert (kontak) ---------- */
+.contact-page { max-width: 620px; }
+.form { display: flex; flex-direction: column; gap: 16px; }
+.form label { display: flex; flex-direction: column; gap: 7px; font-weight: 600; font-size: 0.92rem; }
+.form input, .form textarea {
+  font: inherit; color: var(--text);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px; resize: vertical;
+}
+.form input:focus, .form textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.form .btn { align-self: flex-start; }
+
+.alert { padding: 14px 16px; border-radius: 10px; margin-bottom: 24px; font-size: 0.95rem; }
+.alert-success { background: #e7f7ee; color: #1c7a4b; border: 1px solid #b6e6cc; }
+.alert-error { background: #fdecec; color: #b3261e; border: 1px solid #f4c4c0; }
+.alert-error ul { padding-left: 1.2rem; }
+[data-theme="dark"] .alert-success { background: #11241a; color: #5fd699; border-color: #1f4030; }
+[data-theme="dark"] .alert-error { background: #2a1413; color: #ff8d85; border-color: #4a201d; }
+
+.contact-alt { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text-soft); }
+.contact-alt a { color: var(--accent); font-weight: 600; }
+.social-list { list-style: none; display: grid; gap: 10px; margin-top: 14px; }
+.social-list li { display: flex; gap: 14px; align-items: baseline; }
+.social-list span { min-width: 92px; color: var(--muted); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.footer-made { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+
+/* ---------- 404 ---------- */
+.not-found { text-align: center; padding: 90px 20px; }
+.big-404 { font-size: 5rem; font-weight: 800; color: var(--accent); line-height: 1; }
+
+/* ---------- Footer ---------- */
+.site-footer { border-top: 1px solid var(--border); margin-top: 40px; }
+.footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 28px 20px; color: var(--muted); font-size: 0.9rem; }
+.footer-links { display: flex; gap: 16px; }
+.footer-links a:hover { color: var(--accent); }
+.project-actions { margin-top: 28px; }
+
+/* ---------- Responsif (mobile) ---------- */
+@media (max-width: 680px) {
+  .nav-toggle { display: flex; }
+  .nav {
+    position: absolute; top: 64px; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 4px;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    padding: 12px 20px; display: none;
+  }
+  .nav.nav-open { display: flex; }
+  .nav a { padding: 12px; }
+  .theme-toggle { align-self: flex-start; margin-top: 6px; }
+  .chapter-nav { flex-direction: column; }
+  .chapter-nav-item, .chapter-nav-item.next { max-width: 100%; text-align: left; }
+}

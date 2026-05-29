@@ -1,0 +1,31 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main class="container page ebook-reader">
+  <a href="/ebook" class="back-link">← Daftar isi</a>
+
+  <header class="chapter-header">
+    <p class="eyebrow">Bab <%= chapter.number %> · <%= ebook.title %></p>
+    <h1><%= chapter.title %></h1>
+  </header>
+
+  <!-- Isi bab (dari file Markdown -> HTML) -->
+  <article class="prose"><%- contentHtml %></article>
+
+  <!-- Navigasi antar bab -->
+  <nav class="chapter-nav">
+    <% if (prev) { %>
+      <a class="chapter-nav-item prev" href="/ebook/<%= prev.slug %>">
+        <span>← Sebelumnya</span><strong><%= prev.title %></strong>
+      </a>
+    <% } else { %><span></span><% } %>
+
+    <% if (next) { %>
+      <a class="chapter-nav-item next" href="/ebook/<%= next.slug %>">
+        <span>Selanjutnya →</span><strong><%= next.title %></strong>
+      </a>
+    <% } else { %><span></span><% } %>
+  </nav>
+</main>
+
+<%- include('partials/footer') %>

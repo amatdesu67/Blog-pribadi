@@ -1,0 +1,51 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main class="container page contact-page">
+  <h1>Kontak</h1>
+  <p class="page-lead">Ada pertanyaan, masukan, atau mau ngobrol soal proyek? Kirim pesan di bawah.</p>
+
+  <% if (sent) { %>
+    <!-- Pesan berhasil disimpan -->
+    <div class="alert alert-success">
+      ✅ Terima kasih! Pesanmu sudah masuk. Aku akan baca secepatnya.
+    </div>
+  <% } %>
+
+  <% if (errors.length > 0) { %>
+    <!-- Tampilkan error validasi -->
+    <div class="alert alert-error">
+      <ul>
+        <% errors.forEach(function (e) { %><li><%= e %></li><% }) %>
+      </ul>
+    </div>
+  <% } %>
+
+  <form class="form" method="POST" action="/contact">
+    <label>
+      Nama
+      <input type="text" name="name" value="<%= values.name || '' %>" required />
+    </label>
+    <label>
+      Email
+      <input type="email" name="email" value="<%= values.email || '' %>" required />
+    </label>
+    <label>
+      Pesan
+      <textarea name="message" rows="6" required><%= values.message || '' %></textarea>
+    </label>
+    <button class="btn btn-primary" type="submit">Kirim pesan</button>
+  </form>
+
+  <div class="contact-alt">
+    <p>Atau hubungi langsung lewat:</p>
+    <ul class="social-list">
+      <li><span>WhatsApp</span><a href="<%= social.whatsapp.url %>" target="_blank" rel="noopener"><%= social.whatsapp.label %></a></li>
+      <li><span>Instagram</span><a href="<%= social.instagram.url %>" target="_blank" rel="noopener"><%= social.instagram.label %></a></li>
+      <li><span>TikTok</span><a href="<%= social.tiktok.url %>" target="_blank" rel="noopener"><%= social.tiktok.label %></a></li>
+      <li><span>Email</span><a href="mailto:<%= social.email %>"><%= social.email %></a></li>
+    </ul>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

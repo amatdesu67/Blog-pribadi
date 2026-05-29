@@ -1,0 +1,23 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main class="container page article-page">
+  <a href="/blog" class="back-link">← Semua tulisan</a>
+
+  <article>
+    <header class="article-header">
+      <time><%= formatTanggal(article.created_at) %></time>
+      <h1><%= article.title %></h1>
+      <div class="tag-row">
+        <% article.tags.forEach(function (t) { %>
+          <a href="/blog/tag/<%= encodeURIComponent(t) %>" class="tag tag-sm">#<%= t %></a>
+        <% }) %>
+      </div>
+    </header>
+
+    <!-- Isi artikel (sudah diubah dari Markdown ke HTML) -->
+    <div class="prose"><%- contentHtml %></div>
+  </article>
+</main>
+
+<%- include('partials/footer') %>

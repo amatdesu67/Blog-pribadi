@@ -1,0 +1,28 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main class="container page">
+  <a href="/projects" class="back-link">← Semua projects</a>
+
+  <span class="badge"><%= project.type %> · <%= project.year %></span>
+  <h1><%= project.title %></h1>
+  <p class="page-lead"><%= project.tagline %></p>
+
+  <div class="prose"><%- descriptionHtml %></div>
+
+  <div class="tag-row">
+    <% project.tags.forEach(function (t) { %><span class="tag"><%= t %></span><% }) %>
+  </div>
+
+  <div class="project-actions">
+    <% if (project.internal) { %>
+      <!-- Proyek internal (ebook): dibaca langsung di situs ini -->
+      <a class="btn btn-primary" href="<%= project.url %>">Baca online →</a>
+    <% } else { %>
+      <!-- Proyek eksternal: buka demo/website di tab baru -->
+      <a class="btn btn-primary" href="<%= project.url %>" target="_blank" rel="noopener">Kunjungi demo →</a>
+    <% } %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

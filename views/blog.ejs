@@ -1,0 +1,37 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main class="container page">
+  <h1>Blog</h1>
+  <p class="page-lead">Catatan belajar, cerita proyek, dan pemikiran random.</p>
+
+  <!-- Filter tag -->
+  <div class="tag-row tag-filter">
+    <a href="/blog" class="tag <%= activeTag ? '' : 'is-active' %>">Semua</a>
+    <% tags.forEach(function (t) { %>
+      <a href="/blog/tag/<%= encodeURIComponent(t.tag) %>"
+         class="tag <%= activeTag === t.tag ? 'is-active' : '' %>">
+        #<%= t.tag %> <span class="tag-count"><%= t.count %></span>
+      </a>
+    <% }) %>
+  </div>
+
+  <% if (articles.length === 0) { %>
+    <p class="muted">Belum ada tulisan untuk filter ini.</p>
+  <% } else { %>
+    <div class="article-list">
+      <% articles.forEach(function (a) { %>
+        <a class="article-item" href="/blog/<%= a.slug %>">
+          <time><%= formatTanggal(a.created_at) %></time>
+          <h3><%= a.title %></h3>
+          <p><%= a.excerpt %></p>
+          <div class="tag-row">
+            <% a.tags.forEach(function (t) { %><span class="tag tag-sm">#<%= t %></span><% }) %>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

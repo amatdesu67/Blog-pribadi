@@ -1,0 +1,23 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main class="container page">
+  <h1>Projects</h1>
+  <p class="page-lead">Proyek-proyek yang sudah kubuat sambil belajar.</p>
+
+  <div class="card-grid">
+    <% projects.forEach(function (p) { %>
+      <a class="card project-card" href="/projects/<%= p.slug %>">
+        <span class="badge"><%= p.type %></span>
+        <h3><%= p.title %></h3>
+        <p class="muted"><%= p.tagline %></p>
+        <p><%= p.summary %></p>
+        <div class="tag-row">
+          <% p.tags.forEach(function (t) { %><span class="tag"><%= t %></span><% }) %>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

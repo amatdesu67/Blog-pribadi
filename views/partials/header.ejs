@@ -1,0 +1,19 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/" class="logo">Riza<span>.</span></a>
+
+    <!-- Tombol menu untuk layar kecil -->
+    <button class="nav-toggle" id="navToggle" aria-label="Buka menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav" id="nav">
+      <a href="/"          class="<%= active === 'home'     ? 'is-active' : '' %>">Beranda</a>
+      <a href="/about"     class="<%= active === 'about'    ? 'is-active' : '' %>">Tentang</a>
+      <a href="/projects"  class="<%= active === 'projects' ? 'is-active' : '' %>">Projects</a>
+      <a href="/blog"      class="<%= active === 'blog'     ? 'is-active' : '' %>">Blog</a>
+      <a href="/contact"   class="<%= active === 'contact'  ? 'is-active' : '' %>">Kontak</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Ganti tema gelap/terang"></button>
+    </nav>
+  </div>
+</header>
