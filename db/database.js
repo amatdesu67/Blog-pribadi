@@ -5,16 +5,19 @@
 //                  TURSO_DATABASE_URL + TURSO_AUTH_TOKEN.
 // Semua fungsi di sini ASYNC (mengembalikan Promise) karena libSQL bekerja async.
 
-const { createClient } = require("@libsql/client");
 const { seedArticles } = require("./seed-data");
 
 // Pilih koneksi berdasarkan environment.
-// Kalau env Turso ada -> konek ke Turso. Kalau tidak -> file lokal.
-const db = process.env.TURSO_DATABASE_URL
-  ? createClient({
-      url: process.env.TURSO_DATABASE_URL,
-      authToken: process.env.TURSO_AUTH_TOKEN,
-    })
+//   - Produksi (Turso)  : pakai client versi "web" (pure-JS, lewat HTTP) supaya
+//                         tidak butuh native binding -> aman di serverless Vercel.
+//   - Lokal (file:)     : pakai client default yang mendukung file SQLite.
+const TURSO_URL = process.env.TURSO_DATABASE_URL;
+const { createClient } = TURSO_URL
+  ? require("@libsql/client/web")
+  : require("@libsql/client");
+
+const db = TURSO_URL
+  ? createClient({ url: TURSO_URL, authToken: process.env.TURSO_AUTH_TOKEN })
   : createClient({ url: "file:db/blog.db" }); // relatif terhadap folder proyek
 
 // Ubah satu baris hasil query jadi objek artikel yang rapi
