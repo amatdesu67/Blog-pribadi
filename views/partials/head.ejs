@@ -3,8 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %> — Ahmad Riza Rudi</title>
-  <meta name="description" content="Blog & portofolio pribadi Ahmad Riza Rudi — siswa SMK TKJ yang belajar ngoding & menulis." />
+  <%
+    // Deskripsi bisa di-override per halaman lewat variabel `pageDescription`.
+    const desc = typeof pageDescription !== "undefined"
+      ? pageDescription
+      : "Blog & portofolio pribadi Ahmad Riza Rudi — siswa SMK TKJ yang belajar ngoding & menulis.";
+    const pageTitle = title + " — Ahmad Riza Rudi";
+    const url = typeof canonical !== "undefined" ? canonical : "";
+  %>
+  <title><%= pageTitle %></title>
+  <meta name="description" content="<%= desc %>" />
+  <% if (url) { %><link rel="canonical" href="<%= url %>" /><% } %>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+  <!-- Open Graph / Twitter (preview saat link dibagikan ke WA, IG, dll) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Ahmad Riza Rudi" />
+  <meta property="og:title" content="<%= pageTitle %>" />
+  <meta property="og:description" content="<%= desc %>" />
+  <% if (url) { %><meta property="og:url" content="<%= url %>" /><% } %>
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="<%= pageTitle %>" />
+  <meta name="twitter:description" content="<%= desc %>" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />

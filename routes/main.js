@@ -43,6 +43,18 @@ router.get("/contact", (req, res) => {
 
 // Proses form Kontak: validasi sederhana, lalu simpan ke database.
 router.post("/contact", async (req, res, next) => {
+  // Honeypot: field "website" tersembunyi dari manusia. Kalau terisi, hampir
+  // pasti bot -> pura-pura sukses, tapi jangan simpan ke database.
+  if ((req.body.website || "").trim() !== "") {
+    return res.render("contact", {
+      title: "Kontak",
+      active: "contact",
+      sent: true,
+      errors: [],
+      values: {},
+    });
+  }
+
   const name = (req.body.name || "").trim();
   const email = (req.body.email || "").trim();
   const message = (req.body.message || "").trim();

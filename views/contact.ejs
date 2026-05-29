@@ -22,6 +22,12 @@
   <% } %>
 
   <form class="form" method="POST" action="/contact">
+    <!-- Honeypot anti-spam: disembunyikan, jangan diisi (bot biasanya mengisi). -->
+    <div class="hp-field" aria-hidden="true">
+      <label>Jangan isi kolom ini
+        <input type="text" name="website" tabindex="-1" autocomplete="off" />
+      </label>
+    </div>
     <label>
       Nama
       <input type="text" name="name" value="<%= values.name || '' %>" required />
