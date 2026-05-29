@@ -273,6 +273,9 @@ a.tag:hover { border-color: var(--accent); color: var(--accent); }
 [data-theme="dark"] .alert-success { background: #11241a; color: #5fd699; border-color: #1f4030; }
 [data-theme="dark"] .alert-error { background: #2a1413; color: #ff8d85; border-color: #4a201d; }
 
+/* Honeypot anti-spam: disembunyikan dari manusia, tetap terbaca bot. */
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
 .contact-alt { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text-soft); }
 .contact-alt a { color: var(--accent); font-weight: 600; }
 .social-list { list-style: none; display: grid; gap: 10px; margin-top: 14px; }
