@@ -10,33 +10,33 @@
    Warna sengaja sedikit "hangat" (off-white, near-black) biar tidak
    terasa mati seperti #fff/#000 polos. */
 :root {
-  --bg: #faf9f7;          /* off-white, sedikit hangat */
-  --bg-soft: #f0efec;     /* abu sangat muda */
+  --bg: #ffffff;          /* putih bersih */
+  --bg-soft: #f4f4f5;     /* abu netral sangat muda */
   --surface: #ffffff;     /* kartu/permukaan */
-  --text: #16150f;        /* near-black hangat */
-  --text-soft: #56544c;   /* teks sekunder */
-  --muted: #918e84;       /* teks paling redup */
-  --border: #e4e2db;
-  --accent: #cf5b34;      /* terracotta — satu-satunya warna */
-  --accent-soft: #f7e7df; /* tint aksen untuk latar */
-  --accent-ink: #ffffff;  /* teks di atas aksen */
-  --shadow: 0 1px 2px rgba(20, 18, 12, 0.05), 0 12px 30px rgba(20, 18, 12, 0.06);
+  --text: #131314;        /* near-black netral */
+  --text-soft: #52525b;   /* teks sekunder (abu netral) */
+  --muted: #8e8e96;       /* teks paling redup */
+  --border: #e4e4e7;
+  --accent: #131314;      /* aksen = hitam (grayscale murni) */
+  --accent-soft: #ececee; /* abu muda untuk latar aksen */
+  --accent-ink: #ffffff;  /* teks di atas aksen (tombol) */
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 12px 30px rgba(0, 0, 0, 0.06);
   --radius: 14px;
   --maxw: 920px;
 }
 
 /* ---------- TEMA GELAP ---------- */
 [data-theme="dark"] {
-  --bg: #0c0c0e;          /* near-black */
-  --bg-soft: #151517;
-  --surface: #151517;
-  --text: #ededeb;
-  --text-soft: #a6a49d;
-  --muted: #6f6d67;
-  --border: #27272b;
-  --accent: #e8845a;      /* terracotta lebih terang biar kontras di gelap */
-  --accent-soft: #2a1a12;
-  --accent-ink: #0c0c0e;
+  --bg: #0b0b0c;          /* near-black netral */
+  --bg-soft: #161618;
+  --surface: #161618;
+  --text: #ededee;
+  --text-soft: #a1a1aa;
+  --muted: #6c6c74;
+  --border: #272729;
+  --accent: #ededee;      /* aksen = putih (grayscale di gelap) */
+  --accent-soft: #232326;
+  --accent-ink: #0b0b0c;  /* teks gelap di atas tombol putih */
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px rgba(0, 0, 0, 0.45);
 }
 
