@@ -1,0 +1,141 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<%
+  // Pesan WhatsApp siap-kirim (URL-encoded) supaya begitu diklik langsung ada teksnya.
+  var waBase = social.whatsapp.url.split("?")[0];
+  var waText = encodeURIComponent("Halo Riza, aku tertarik dengan jasa pembuatan website kamu. Boleh diskusi?");
+  var waLink = waBase + "?text=" + waText;
+%>
+
+<main>
+  <!-- ===== HERO ===== -->
+  <section class="hero container">
+    <div class="hero-text">
+      <p class="eyebrow">Jasa Pembuatan Website &amp; App</p>
+      <h1>Butuh Website atau App? Aku Bisa Bantu.</h1>
+      <p class="hero-lead">
+        Aku bantu kamu bikin website atau aplikasi web yang rapi dan beneran
+        jalan — dari landing page bisnis, toko online, sampai app custom dengan
+        integrasi AI. Dibangun pakai Node.js, Express, dan tools modern.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="<%= waLink %>" target="_blank" rel="noopener">Chat via WhatsApp</a>
+        <a class="btn btn-ghost" href="#harga">Lihat Harga</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DAFTAR JASA ===== -->
+  <section class="container section">
+    <div class="section-head"><h2>Yang Bisa Kukerjakan</h2></div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="badge">Landing Page</span>
+        <h3>Landing Page Bisnis</h3>
+        <p>Profil usaha, etalase produk/jasa, dan tombol kontak. Cocok buat UMKM yang mau tampil profesional online.</p>
+      </div>
+      <div class="card">
+        <span class="badge">Toko Online</span>
+        <h3>Toko Online Sederhana</h3>
+        <p>Katalog produk, keranjang belanja, dan alur checkout. Seperti yang kubangun di Anto Computer.</p>
+      </div>
+      <div class="card">
+        <span class="badge">App Custom</span>
+        <h3>Web App Custom</h3>
+        <p>Form, dashboard, hingga integrasi AI sesuai kebutuhanmu. Fleksibel — tinggal diskusi maunya seperti apa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HARGA ===== -->
+  <section class="container section" id="harga">
+    <div class="section-head"><h2>Harga</h2></div>
+    <div class="price-grid">
+      <div class="price-card">
+        <p class="price-name">Landing Page</p>
+        <p class="price-num">mulai <strong>Rp 300rb</strong></p>
+        <ul class="price-list">
+          <li>1 halaman, beberapa section</li>
+          <li>Responsif (HP &amp; desktop)</li>
+          <li>Tombol kontak / WhatsApp</li>
+        </ul>
+        <a class="btn btn-ghost" href="<%= waLink %>" target="_blank" rel="noopener">Pesan</a>
+      </div>
+      <div class="price-card price-featured">
+        <span class="price-tag">Paling laris</span>
+        <p class="price-name">Toko Online</p>
+        <p class="price-num">mulai <strong>Rp 750rb</strong></p>
+        <ul class="price-list">
+          <li>Katalog produk</li>
+          <li>Keranjang &amp; checkout</li>
+          <li>Kelola data sederhana</li>
+        </ul>
+        <a class="btn btn-primary" href="<%= waLink %>" target="_blank" rel="noopener">Pesan</a>
+      </div>
+      <div class="price-card">
+        <p class="price-name">App Custom</p>
+        <p class="price-num">mulai <strong>Rp 1jt</strong></p>
+        <ul class="price-list">
+          <li>Form / dashboard</li>
+          <li>Integrasi AI (opsional)</li>
+          <li>Sesuai kebutuhan</li>
+        </ul>
+        <a class="btn btn-ghost" href="<%= waLink %>" target="_blank" rel="noopener">Pesan</a>
+      </div>
+    </div>
+    <p class="muted price-note">
+      *Harga "mulai dari" — final menyesuaikan kebutuhan &amp; tingkat kerumitan. Yuk diskusi dulu, gratis.
+    </p>
+  </section>
+
+  <!-- ===== KENAPA PILIH AKU ===== -->
+  <section class="container section">
+    <div class="section-head"><h2>Kenapa Pilih Aku?</h2></div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>✅ Ada bukti nyata</h3>
+        <p>Bukan janji kosong — kamu bisa lihat langsung hasil kerjaku seperti Anto Computer dan Pacar AI.</p>
+      </div>
+      <div class="card">
+        <h3>💬 Komunikasi langsung</h3>
+        <p>Ngobrol langsung lewat WhatsApp, tanpa perantara. Cepat, santai, dan jelas.</p>
+      </div>
+      <div class="card">
+        <h3>🔁 Revisi wajar</h3>
+        <p>Revisi dalam batas wajar sudah termasuk, biar hasilnya pas sama yang kamu mau.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PORTFOLIO SINGKAT ===== -->
+  <section class="container section">
+    <div class="section-head">
+      <h2>Contoh Karya</h2>
+      <a href="/projects" class="link-more">Semua projects →</a>
+    </div>
+    <div class="card-grid">
+      <% showcase.forEach(function (p) { %>
+        <a class="card project-card" href="/projects/<%= p.slug %>">
+          <span class="badge"><%= p.type %></span>
+          <h3><%= p.title %></h3>
+          <p><%= p.summary %></p>
+        </a>
+      <% }) %>
+    </div>
+  </section>
+
+  <!-- ===== CTA PENUTUP ===== -->
+  <section class="container section">
+    <div class="cta-box">
+      <h2>Siap mulai project kamu?</h2>
+      <p>Ceritakan idemu — aku bantu wujudkan jadi website yang beneran jalan.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="<%= waLink %>" target="_blank" rel="noopener">Chat via WhatsApp</a>
+        <a class="btn btn-ghost" href="mailto:<%= social.email %>">Email Aku</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

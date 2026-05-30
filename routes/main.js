@@ -31,6 +31,13 @@ router.get("/about", (req, res) => {
   res.render("about", { title: "Tentang", active: "about" });
 });
 
+// Halaman Jasa (hire me): daftar layanan + harga + CTA.
+router.get("/jasa", (req, res) => {
+  // Tampilkan beberapa proyek sebagai bukti nyata di bagian portfolio.
+  const showcase = projects.filter((p) => !p.internal).slice(0, 3);
+  res.render("jasa", { title: "Jasa", active: "jasa", showcase });
+});
+
 // Halaman Kontak: tampilkan form kosong.
 router.get("/contact", (req, res) => {
   res.render("contact", {
