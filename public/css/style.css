@@ -282,23 +282,81 @@ a.tag:hover { border-color: var(--accent); color: var(--accent); }
 .page { padding: 48px 20px 72px; }
 .page h1 { font-size: clamp(2rem, 5vw, 2.7rem); font-weight: 800; letter-spacing: -0.03em; }
 
-/* ---------- Avatar (halaman About) ----------
-   Taruh file di: public/img/avatar.png (kalau kosong, inisial "R" muncul). */
-.about-head { display: flex; align-items: center; gap: 22px; margin-bottom: 28px; flex-wrap: wrap; }
-.avatar {
-  position: relative;
-  width: 96px; height: 96px; flex-shrink: 0;
-  border-radius: 50%; overflow: hidden;
-  border: 2px solid var(--border);
-  background: var(--accent-soft);
+/* ========== Halaman About / Profil ========== */
+
+/* Kartu profil: foto + info */
+.profile-card {
+  display: flex; gap: 28px; align-items: center; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow);
 }
-.avatar img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; display: block; }
-.avatar .avatar-fallback {
+.profile-photo {
+  position: relative; flex-shrink: 0;
+  width: 150px; height: 190px;
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--accent-soft);
+}
+.profile-photo img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; display: block; }
+.profile-fallback {
   position: absolute; inset: 0; z-index: 0;
   display: flex; align-items: center; justify-content: center;
-  font-weight: 800; font-size: 2.2rem; color: var(--accent);
+  font-weight: 800; font-size: 3.5rem; color: var(--accent);
 }
-.about-head h1 { margin: 0; }
+.profile-info { min-width: 0; flex: 1; }
+.profile-info h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 6px 0; letter-spacing: -0.03em; }
+.profile-role { font-weight: 600; color: var(--text); }
+.profile-meta { color: var(--text-soft); font-size: 0.92rem; margin-top: 6px; }
+.profile-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.profile-links .btn { padding: 9px 16px; font-size: 0.9rem; }
+
+/* Statistik singkat */
+.stat-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 24px 0;
+}
+.stat {
+  text-align: center; padding: 16px 8px;
+  background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px;
+}
+.stat strong { display: block; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; }
+.stat span { font-size: 0.8rem; color: var(--muted); }
+
+/* Blok section */
+.section-block { margin-top: 40px; }
+.section-block > h2 {
+  font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 16px;
+  position: relative; padding-left: 16px;
+}
+.section-block > h2::before {
+  content: ""; position: absolute; left: 0; top: 0.15em; bottom: 0.15em;
+  width: 4px; border-radius: 3px; background: var(--accent);
+}
+
+/* Skill bars */
+.skill-list { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px; }
+.skill-top { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; }
+.skill-pct { color: var(--muted); font-weight: 500; }
+.skill-bar { height: 8px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+.skill-bar span { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+
+/* Timeline */
+.timeline { list-style: none; position: relative; padding-left: 28px; }
+.timeline::before { content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); }
+.timeline li { position: relative; padding-bottom: 22px; }
+.timeline li::before {
+  content: ""; position: absolute; left: -28px; top: 4px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--surface); border: 3px solid var(--accent);
+}
+.tl-year { font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.timeline strong { display: block; margin-top: 2px; }
+.timeline p { color: var(--text-soft); font-size: 0.95rem; margin-top: 2px; }
+
+@media (max-width: 680px) {
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .skill-list { grid-template-columns: 1fr; }
+  .profile-card { flex-direction: column; text-align: center; }
+  .profile-links { justify-content: center; }
+}
 .page-lead { color: var(--text-soft); font-size: 1.1rem; margin: 10px 0 28px; }
 .muted { color: var(--muted); }
 .back-link { display: inline-block; color: var(--text-soft); font-size: 0.9rem; margin-bottom: 24px; }

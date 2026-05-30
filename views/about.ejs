@@ -1,51 +1,119 @@
 <%- include('partials/head') %>
 <%- include('partials/header') %>
 
-<main class="container page">
-  <!-- Avatar opsional. Taruh file di: public/img/avatar.png -->
-  <div class="about-head">
-    <span class="avatar">
-      <img src="/img/avatar.png" alt="Foto Ahmad Riza Rudi"
-           onerror="this.remove()" />
-      <span class="avatar-fallback">R</span>
-    </span>
-    <h1>Tentang Aku</h1>
-  </div>
+<main class="container page about-page">
 
-  <div class="prose">
-    <p>
-      Halo! Aku <strong>Ahmad Riza Rudi</strong>, 18 tahun, siswa SMK jurusan
-      <strong>Teknik Komputer dan Jaringan (TKJ)</strong>. Selain ngulik jaringan,
-      aku jatuh cinta sama dunia pemrograman web — bikin sesuatu dari nol lalu
-      melihatnya jalan itu rasanya nagih.
-    </p>
+  <!-- ===== Kartu profil ===== -->
+  <section class="profile-card">
+    <div class="profile-photo">
+      <img src="/img/profile.jpg" alt="Foto Ahmad Riza Rudi" onerror="this.remove()" />
+      <span class="profile-fallback">R</span>
+    </div>
+    <div class="profile-info">
+      <p class="eyebrow">Tentang Aku</p>
+      <h1>Ahmad Riza Rudi</h1>
+      <p class="profile-role">Web Developer (pemula) &amp; Penulis · Siswa SMK TKJ</p>
+      <p class="profile-meta">📍 Indonesia · 🎂 18 tahun · 💼 Terbuka untuk magang &amp; project</p>
+      <div class="profile-links">
+        <a class="btn btn-primary" href="/contact">Hubungi Aku</a>
+        <a class="btn btn-ghost" href="<%= social.instagram.url %>" target="_blank" rel="noopener">Instagram</a>
+        <!-- TODO: ganti # dengan link GitHub kamu -->
+        <a class="btn btn-ghost" href="#" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
 
-    <h2>Yang sedang kupelajari</h2>
-    <ul>
-      <li><strong>Front-end:</strong> HTML, CSS, JavaScript.</li>
-      <li><strong>Back-end:</strong> Node.js &amp; Express.</li>
-      <li><strong>Database:</strong> SQLite.</li>
-    </ul>
-    <p>
-      Aku suka stack yang sederhana tapi nyata — yang bisa kupahami dari ujung
-      ke ujung, bukan cuma ikut-ikutan.
-    </p>
+  <!-- ===== Statistik singkat ===== -->
+  <section class="stat-row">
+    <div class="stat"><strong>4</strong><span>Proyek</span></div>
+    <div class="stat"><strong>3+</strong><span>Tulisan</span></div>
+    <div class="stat"><strong>1</strong><span>Ebook</span></div>
+    <div class="stat"><strong>2026</strong><span>Mulai ngoding</span></div>
+  </section>
 
-    <h2>Selain ngoding</h2>
-    <p>
-      Aku juga menulis. Buku pertamaku, <em>"Otak yang Mudah Dibodohi"</em>,
-      adalah panduan berpikir kritis di era hoaks dan manipulasi informasi —
-      bisa kamu baca langsung di <a href="/ebook">halaman Ebook</a>.
-    </p>
+  <!-- ===== Perkenalan ===== -->
+  <section class="section-block">
+    <h2>Halo 👋</h2>
+    <div class="prose">
+      <p>
+        Aku <strong>Ahmad Riza Rudi</strong>, 18 tahun, siswa SMK jurusan
+        <strong>Teknik Komputer dan Jaringan (TKJ)</strong>. Selain ngulik jaringan,
+        aku jatuh cinta sama dunia pemrograman web — bikin sesuatu dari nol lalu
+        melihatnya jalan itu rasanya nagih.
+      </p>
+      <p>
+        Aku suka stack yang sederhana tapi nyata — yang bisa kupahami dari ujung
+        ke ujung, bukan cuma ikut-ikutan. Selain ngoding, aku juga menulis; bukuku
+        <em>"Otak yang Mudah Dibodohi"</em> bisa dibaca di
+        <a href="/ebook">halaman Ebook</a>.
+      </p>
+    </div>
+  </section>
 
+  <!-- ===== Skill ===== -->
+  <!-- TODO: sesuaikan level (angka) sesuai kemampuanmu sendiri -->
+  <section class="section-block">
+    <h2>Yang Kukuasai</h2>
+    <div class="skill-list">
+      <% var skills = [
+        { name: 'HTML & CSS', level: 80 },
+        { name: 'JavaScript', level: 65 },
+        { name: 'Node.js & Express', level: 60 },
+        { name: 'SQLite / Database', level: 55 },
+        { name: 'Git & Deploy (Vercel)', level: 60 },
+        { name: 'Jaringan (TKJ)', level: 70 }
+      ]; %>
+      <% skills.forEach(function (s) { %>
+        <div class="skill">
+          <div class="skill-top"><span><%= s.name %></span><span class="skill-pct"><%= s.level %>%</span></div>
+          <div class="skill-bar"><span style="width: <%= s.level %>%"></span></div>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+
+  <!-- ===== Tools ===== -->
+  <section class="section-block">
+    <h2>Tools &amp; Teknologi</h2>
+    <div class="tag-row">
+      <% ['HTML','CSS','JavaScript','Node.js','Express','EJS','SQLite','Turso','Git','GitHub','Vercel','VS Code'].forEach(function (t) { %>
+        <span class="tag"><%= t %></span>
+      <% }) %>
+    </div>
+  </section>
+
+  <!-- ===== Perjalanan ===== -->
+  <!-- TODO: betulin tahun & isi sesuai perjalananmu yang sebenarnya -->
+  <section class="section-block">
+    <h2>Perjalanan</h2>
+    <ol class="timeline">
+      <li>
+        <span class="tl-year">2024</span>
+        <div><strong>Masuk SMK jurusan TKJ</strong><p>Mulai kenal dunia komputer &amp; jaringan lebih dalam.</p></div>
+      </li>
+      <li>
+        <span class="tl-year">2025</span>
+        <div><strong>Mulai serius ngoding web</strong><p>Belajar HTML, CSS, JavaScript, lalu Node.js &amp; Express.</p></div>
+      </li>
+      <li>
+        <span class="tl-year">2026</span>
+        <div><strong>Rilis ebook &amp; proyek pertama</strong><p>Menerbitkan "Otak yang Mudah Dibodohi", bikin Anto Computer, Pacar AI, dan Nalar.</p></div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ===== Tujuan ===== -->
+  <section class="section-block">
     <h2>Tujuanku</h2>
-    <p>
-      Terus belajar, bikin proyek nyata, dan pelan-pelan jadi developer yang
-      kodenya rapi dan berguna buat orang lain. Blog ini jadi jejak perjalanan itu.
-    </p>
-  </div>
+    <div class="prose">
+      <p>
+        Terus belajar, bikin proyek nyata, dan pelan-pelan jadi developer yang
+        kodenya rapi dan berguna buat orang lain. Blog ini jadi jejak perjalanan itu.
+      </p>
+    </div>
+    <a class="btn btn-primary" href="/contact" style="margin-top:18px;">Ngobrol yuk →</a>
+  </section>
 
-  <a class="btn btn-primary" href="/contact">Ngobrol yuk →</a>
 </main>
 
 <%- include('partials/footer') %>
