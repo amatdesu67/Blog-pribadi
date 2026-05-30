@@ -5,17 +5,23 @@
 
 const projects = [
   {
-    slug: "nalar-ai",
-    title: "Nalar AI",
-    tagline: "Asisten AI untuk berpikir & bernalar",
+    slug: "nalar",
+    title: "Nalar",
+    tagline: "Mesin pencari bukti ilmiah — berargumen dengan bukti",
     summary:
-      "Asisten AI berbahasa Indonesia untuk ngobrol, bertanya, dan membantu bernalar.",
+      "Cari jawaban yang berdasar pada jurnal akademik: lihat dua sisi argumen, " +
+      "kualitas sumber, dan tingkat konsensus ilmiahnya.",
     description:
-      "Nalar AI adalah aplikasi web berbasis AI yang saya bangun untuk membantu " +
-      "pengguna ngobrol dan berpikir lebih jernih. Namanya dari kata 'nalar' " +
-      "(penalaran). Lewat proyek ini saya belajar menghubungkan aplikasi ke " +
-      "layanan AI, mengelola alur percakapan, dan men-deploy-nya ke Vercel.",
-    tags: ["AI", "Node.js", "JavaScript"],
+      "Nalar adalah mesin pencari bukti ilmiah. Alih-alih menebak, pengguna " +
+      "memasukkan pertanyaan lalu Nalar mencarikan jawaban yang berdasar pada " +
+      "paper akademik (lewat database publik OpenAlex). Nalar menimbang dua sisi " +
+      "argumen, menilai kualitas sumber, dan menunjukkan seberapa kuat konsensus " +
+      "ilmiahnya — plus menyimpan riwayat pencarian.\n\n" +
+      "Proyek ini paling dekat dengan hal yang kupedulikan: berpikir kritis dan " +
+      "melawan hoaks (tema yang juga kutulis di ebook 'Otak yang Mudah Dibodohi'). " +
+      "Secara teknis, di sini aku belajar memanggil API eksternal (OpenAlex), " +
+      "merangkum abstrak, dan menyimpan data pencarian.",
+    tags: ["AI", "Sains", "Berpikir Kritis", "OpenAlex"],
     year: 2026,
     url: "https://nalar67.vercel.app/",
     type: "Web App",
