@@ -4,16 +4,29 @@
 <main>
   <!-- HERO -->
   <section class="hero container">
-    <p class="eyebrow">Halo, namaku</p>
-    <h1>Ahmad Riza Rudi</h1>
-    <p class="hero-lead">
-      Siswa SMK jurusan TKJ, 18 tahun. Lagi serius belajar bikin web
-      (Node.js, Express, SQLite) dan suka menulis. Ini tempatku menaruh
-      proyek dan catatan belajar.
-    </p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="/projects">Lihat Projects</a>
-      <a class="btn btn-ghost" href="/contact">Hubungi Aku</a>
+    <div class="hero-text">
+      <p class="eyebrow">Halo, namaku</p>
+      <h1>Ahmad Riza Rudi</h1>
+      <p class="hero-lead">
+        Siswa SMK jurusan TKJ, 18 tahun. Lagi serius belajar bikin web
+        (Node.js, Express, SQLite) dan suka menulis. Ini tempatku menaruh
+        proyek dan catatan belajar.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/projects">Lihat Projects</a>
+        <a class="btn btn-ghost" href="/contact">Hubungi Aku</a>
+      </div>
+    </div>
+
+    <!-- Slot gambar anime. Taruh file di: public/img/hero.png -->
+    <div class="hero-art">
+      <img src="/img/hero.png" alt="Ilustrasi Ahmad Riza Rudi"
+           onerror="this.remove()" />
+      <div class="art-placeholder">
+        <strong>Slot gambar anime</strong>
+        <span>taruh file di</span>
+        <code>public/img/hero.png</code>
+      </div>
     </div>
   </section>
 

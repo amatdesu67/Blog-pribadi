@@ -2,7 +2,15 @@
 <%- include('partials/header') %>
 
 <main class="container page">
-  <h1>Tentang Aku</h1>
+  <!-- Avatar opsional. Taruh file di: public/img/avatar.png -->
+  <div class="about-head">
+    <span class="avatar">
+      <img src="/img/avatar.png" alt="Foto Ahmad Riza Rudi"
+           onerror="this.remove()" />
+      <span class="avatar-fallback">R</span>
+    </span>
+    <h1>Tentang Aku</h1>
+  </div>
 
   <div class="prose">
     <p>
