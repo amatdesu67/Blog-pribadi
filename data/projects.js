@@ -5,6 +5,23 @@
 
 const projects = [
   {
+    slug: "nalar-ai",
+    title: "Nalar AI",
+    tagline: "Asisten AI untuk berpikir & bernalar",
+    summary:
+      "Asisten AI berbahasa Indonesia untuk ngobrol, bertanya, dan membantu bernalar.",
+    description:
+      "Nalar AI adalah aplikasi web berbasis AI yang saya bangun untuk membantu " +
+      "pengguna ngobrol dan berpikir lebih jernih. Namanya dari kata 'nalar' " +
+      "(penalaran). Lewat proyek ini saya belajar menghubungkan aplikasi ke " +
+      "layanan AI, mengelola alur percakapan, dan men-deploy-nya ke Vercel.",
+    tags: ["AI", "Node.js", "JavaScript"],
+    year: 2026,
+    url: "https://nalar67.vercel.app/",
+    type: "Web App",
+    featured: true,
+  },
+  {
     slug: "anto-computer",
     title: "Anto Computer",
     tagline: "Website toko komputer",
