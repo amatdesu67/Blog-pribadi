@@ -10,7 +10,8 @@ const blogRoutes = require("./routes/blog");
 const projectRoutes = require("./routes/projects");
 const ebookRoutes = require("./routes/ebook");
 const { social } = require("./data/social");
-const { initDb, getAllArticles } = require("./db/database");
+const { initDb } = require("./db/database");
+const { getAllArticles } = require("./content/blog");
 
 const app = express();
 

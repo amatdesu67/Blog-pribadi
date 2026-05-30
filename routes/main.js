@@ -7,7 +7,8 @@ const router = express.Router();
 
 const { projects } = require("../data/projects");
 const { ebook } = require("../content/ebook");
-const { getAllArticles, addMessage } = require("../db/database");
+const { getAllArticles } = require("../content/blog");
+const { addMessage } = require("../db/database");
 
 // Beranda: proyek unggulan + 3 artikel terbaru + sorotan ebook.
 router.get("/", async (req, res, next) => {

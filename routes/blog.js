@@ -10,7 +10,7 @@ const {
   getArticleBySlug,
   getArticlesByTag,
   getAllTags,
-} = require("../db/database");
+} = require("../content/blog");
 const { renderMarkdown } = require("../lib/markdown");
 
 // Daftar semua artikel + daftar tag.
