@@ -18,9 +18,12 @@
       </div>
     </div>
 
-    <!-- Slot gambar anime. Taruh file di: public/img/hero.png -->
-    <div class="hero-art">
-      <img src="/img/hero.png" alt="Ilustrasi Ahmad Riza Rudi"
+    <!-- Slot gambar anime. Dua pose: berdiri (default) & melambai.
+         Hover (desktop) atau klik/tap (HP) -> berganti ke pose melambai. -->
+    <div class="hero-art" title="Sapa balik! (hover / klik)">
+      <img class="art-stand" src="/img/hero.png" alt="Ilustrasi Ahmad Riza Rudi"
+           onerror="this.remove()" />
+      <img class="art-wave" src="/img/hero-wave.png" alt="" aria-hidden="true"
            onerror="this.remove()" />
       <div class="art-placeholder">
         <strong>Slot gambar anime</strong>

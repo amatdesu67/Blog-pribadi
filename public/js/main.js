@@ -17,6 +17,19 @@
     });
   }
 
+  // --- Gambar hero melambai saat diklik / disentuh ---
+  // (Hover sudah ditangani CSS; ini biar di HP yang tanpa hover tetap bisa.)
+  const heroArt = document.querySelector(".hero-art");
+  if (heroArt) {
+    heroArt.addEventListener("click", function () {
+      heroArt.classList.add("is-waving");
+      clearTimeout(heroArt._waveTimer);
+      heroArt._waveTimer = setTimeout(function () {
+        heroArt.classList.remove("is-waving");
+      }, 1600);
+    });
+  }
+
   // --- Menu mobile (hamburger) ---
   const navToggle = document.getElementById("navToggle");
   const nav = document.getElementById("nav");
