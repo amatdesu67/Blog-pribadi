@@ -188,6 +188,7 @@ nav { display: flex; align-items: center; gap: 6px; }
   display: block;
   width: 100%;
   height: auto;
+  aspect-ratio: 1 / 1;        /* gambar 1024x1024 -> ruang ter-reserve, anti layout-shift */
   max-height: 440px;          /* batasi tinggi biar tidak "kepanjangan" */
   object-fit: contain;        /* tampilkan gambar UTUH, tanpa crop */
   /* Gambar line-art berlatar putih -> bingkai jadi "kartu" putih supaya
@@ -225,19 +226,6 @@ nav { display: flex; align-items: center; gap: 6px; }
   .hero-art:hover .art-wave,
   .hero-art.is-waving .art-wave { animation: none; }
 }
-/* Placeholder: tampil saat gambar belum ada / gagal load */
-.art-placeholder {
-  position: absolute; inset: 0;
-  z-index: 0;                 /* di BELAKANG gambar; muncul hanya kalau img gagal/dihapus */
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 6px; text-align: center; padding: 16px;
-  color: var(--muted); font-size: 0.82rem; font-weight: 500;
-  border: 1px dashed var(--border); border-radius: var(--radius);
-  background: var(--bg-soft);
-}
-.art-placeholder strong { color: var(--text-soft); font-size: 0.9rem; }
-.art-placeholder code { font-size: 0.78rem; color: var(--accent); }
-
 /* ---------- Section umum ---------- */
 .section { padding: 36px 20px; }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; }
