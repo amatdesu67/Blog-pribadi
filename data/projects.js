@@ -7,20 +7,20 @@ const projects = [
   {
     slug: "cofus-coffee",
     title: "Cofus Coffee",
-    tagline: "Landing page kedai kopi — \"Ngopi Nyaman, Hari Jadi Nikmat\"",
+    tagline: "Website kedai kopi — \"Everyday is CofusDay\"",
     summary:
-      "Landing page kedai kopi: hero, menu + harga, cerita kedai, lokasi & jam buka, " +
-      "dan tombol pesan. Contoh nyata landing page bisnis untuk UMKM.",
+      "Website kedai kopi di Kuala Kapuas: profil & suasana, galeri, menu yang " +
+      "dikelola lewat admin panel, lokasi & jam buka, plus form pesan via WhatsApp.",
     description:
-      "Cofus Coffee adalah landing page untuk sebuah kedai kopi. Isinya lengkap " +
-      "buat bisnis: bagian hero dengan tagline, daftar menu beserta harga, cerita " +
-      "& suasana kedai, info lokasi dan jam buka, plus tombol ajakan untuk memesan. " +
-      "Proyek ini contoh nyata layanan landing page bisnis yang kutawarkan — rapi, " +
-      "responsif, dan siap pakai untuk UMKM.",
-    tags: ["Landing Page", "Bisnis", "UMKM", "Responsif"],
+      "Cofus Coffee adalah website untuk kedai kopi di Kuala Kapuas. Selain tampilan " +
+      "landing page yang rapi (hero, cerita kedai, galeri suasana, lokasi & jam buka " +
+      "09.00–23.00), menunya bisa diatur lewat admin panel — jadi pemilik bisa " +
+      "menambah/mengubah menu sendiri tanpa ngoding. Pemesanan langsung terhubung " +
+      "ke WhatsApp. Contoh nyata website bisnis untuk UMKM yang kutawarkan.",
+    tags: ["Landing Page", "Bisnis", "UMKM", "Admin Panel"],
     year: 2026,
     url: "https://cofus-coffe.vercel.app/",
-    type: "Landing Page",
+    type: "Web App",
     featured: true,
   },
   {
