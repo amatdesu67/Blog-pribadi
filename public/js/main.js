@@ -163,7 +163,8 @@
             card.style.display = "block";
             setTimeout(() => {
               card.style.opacity = "1";
-              card.style.transform = "translateY(0) scale(1)";
+              // Kosongkan transform inline supaya efek hover-naik kartu tetap jalan.
+              card.style.transform = "";
             }, 50);
           } else {
             card.style.opacity = "0";

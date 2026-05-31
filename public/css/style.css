@@ -261,7 +261,7 @@ nav { display: flex; align-items: center; gap: 6px; }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 22px;
-  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
 }
 .card:hover {
   transform: translateY(-6px) scale(1.015);
