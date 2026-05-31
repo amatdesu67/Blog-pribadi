@@ -202,6 +202,37 @@
     });
   }
 
+  // --- Transisi pindah halaman (fade-out sebelum navigasi) ---
+  // Saat link internal diklik, body di-fade dulu lalu baru pindah,
+  // jadi perpindahan terasa mulus (bukan "njeglek").
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!prefersReduced) {
+    document.addEventListener("click", function (e) {
+      const a = e.target.closest("a");
+      if (!a) return;
+      const href = a.getAttribute("href");
+      // Lewati: link kosong, anchor (#), tab baru, atau domain luar.
+      if (
+        !href ||
+        href.startsWith("#") ||
+        a.target === "_blank" ||
+        a.hasAttribute("download") ||
+        a.host !== window.location.host ||
+        e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0
+      ) return;
+
+      e.preventDefault();
+      document.body.classList.add("is-leaving");
+      setTimeout(function () {
+        window.location.href = href;
+      }, 200);
+    });
+  }
+  // Saat kembali via tombol Back, pastikan halaman tampil lagi (bukan blank).
+  window.addEventListener("pageshow", function () {
+    document.body.classList.remove("is-leaving");
+  });
+
   // --- Animasi Timeline Saat di-Scroll (About Page) ---
   const timelineItems = document.querySelectorAll(".timeline-item");
   if (timelineItems.length > 0) {

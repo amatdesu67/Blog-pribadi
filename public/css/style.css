@@ -692,3 +692,26 @@ button.tag.is-active {
   outline: none !important;
   box-shadow: none !important;
 }
+
+/* ===========================================================
+   Transisi antar halaman (page transition)
+   - Saat halaman DIBUKA: konten <main> fade-in + naik tipis.
+   - Saat link internal DIKLIK: body diberi .is-leaving -> fade-out
+     halus dulu (diatur di main.js) sebelum pindah halaman.
+   =========================================================== */
+main {
+  animation: page-enter 0.45s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+}
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+body.is-leaving {
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+/* Hormati pengguna yang mematikan animasi */
+@media (prefers-reduced-motion: reduce) {
+  main { animation: none; }
+  body.is-leaving { opacity: 1; transition: none; }
+}
