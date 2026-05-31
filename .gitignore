@@ -11,3 +11,6 @@ db/*.db-wal
 .env
 npm-debug.log*
 .DS_Store
+
+# Pengaturan lokal Claude Code
+.claude/settings.local.json
