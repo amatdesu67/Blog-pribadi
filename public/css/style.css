@@ -229,10 +229,10 @@ nav { display: flex; align-items: center; gap: 6px; }
   .hero-art.is-waving .art-wave { animation: none; }
 }
 /* ---------- Section umum ---------- */
-.section { padding: 36px 20px; }
-.section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; }
+.section { padding: 40px 20px; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 24px; }
 .section-head h2 {
-  font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em;
+  font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em;
   position: relative; padding-left: 16px;
 }
 /* Garis aksen kecil di kiri judul section */
@@ -250,15 +250,15 @@ nav { display: flex; align-items: center; gap: 6px; }
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 22px;
-  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  padding: 24px;
+  transition: transform 0.3s ease-out, border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.3s ease;
 }
 .card:hover {
-  transform: translateY(-6px) scale(1.015);
+  transform: translateY(-4px);
   border-color: var(--accent);
   box-shadow: var(--shadow);
 }
-.project-card h3 { font-size: 1.2rem; margin: 12px 0 6px; letter-spacing: -0.01em; }
+.project-card h3 { font-size: 1.2rem; margin: 12px 0 8px; letter-spacing: -0.01em; }
 .project-card p { color: var(--text-soft); font-size: 0.95rem; }
 
 .badge {
@@ -274,7 +274,7 @@ nav { display: flex; align-items: center; gap: 6px; }
 }
 
 /* ---------- Tag ---------- */
-.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .tag {
   font-size: 0.8rem;
   color: var(--text-soft);
@@ -393,7 +393,7 @@ a.tag:hover { border-color: var(--accent); color: var(--accent); }
 /* Blok section */
 .section-block { margin-top: 40px; }
 .section-block > h2 {
-  font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 16px;
+  font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 16px;
   position: relative; padding-left: 16px;
 }
 .section-block > h2::before {
@@ -600,7 +600,7 @@ button.tag.is-active {
   box-shadow: var(--shadow);
   overflow: hidden;
   font-family: 'Consolas', 'Fira Code', 'Courier New', monospace;
-  margin-top: 14px;
+  margin-top: 16px;
 }
 [data-theme="dark"] .terminal-container {
   border-color: #1f242c;
