@@ -34,9 +34,18 @@
   const navToggle = document.getElementById("navToggle");
   const nav = document.getElementById("nav");
   if (navToggle && nav) {
-    navToggle.addEventListener("click", function () {
+    navToggle.addEventListener("click", function (e) {
+      e.stopPropagation();
       const open = nav.classList.toggle("nav-open");
       navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+
+    // Tutup menu otomatis jika pengguna mengetuk di luar area menu
+    document.addEventListener("click", function (e) {
+      if (nav.classList.contains("nav-open") && !nav.contains(e.target) && e.target !== navToggle) {
+        nav.classList.remove("nav-open");
+        navToggle.setAttribute("aria-expanded", "false");
+      }
     });
   }
 })();

@@ -51,7 +51,12 @@ body {
   color: var(--text);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Efek transisi mulus saat perubahan tema gelap/terang */
+body, .site-header, .site-footer, .card, .btn, .theme-toggle, .nav a, .ebook-highlight, .cta-box, .profile-card, .stat, .skill-bar span, .timeline li::before, input, textarea {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 a { color: inherit; text-decoration: none; }
@@ -71,17 +76,26 @@ a { color: inherit; text-decoration: none; }
 .logo { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; }
 .logo span { color: var(--accent); }
 
-.nav { display: flex; align-items: center; gap: 6px; }
+nav { display: flex; align-items: center; gap: 6px; }
 .nav a {
   padding: 8px 12px;
   border-radius: 9px;
   font-size: 0.93rem;
   font-weight: 500;
   color: var(--text-soft);
-  transition: background 0.15s, color 0.15s;
+  position: relative;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
-.nav a:hover { color: var(--text); background: var(--bg-soft); }
-.nav a.is-active { color: var(--accent); background: var(--accent-soft); }
+.nav a:hover {
+  color: var(--text);
+  background: var(--bg-soft);
+  transform: translateY(-1px);
+}
+.nav a.is-active {
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
 
 /* Tombol ganti tema */
 .theme-toggle {
@@ -92,8 +106,18 @@ a { color: inherit; text-decoration: none; }
   cursor: pointer;
   font-size: 1rem;
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.theme-toggle:hover { border-color: var(--accent); }
+.theme-toggle:hover {
+  border-color: var(--accent);
+  transform: scale(1.08) rotate(15deg);
+}
+.theme-toggle:active {
+  transform: scale(0.92) rotate(-10deg);
+}
 [data-theme="light"] .theme-toggle::before { content: "🌙"; }
 [data-theme="dark"] .theme-toggle::before { content: "☀️"; }
 
@@ -111,13 +135,31 @@ a { color: inherit; text-decoration: none; }
   font-size: 0.95rem;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: transform 0.08s ease, opacity 0.15s, background 0.15s;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
-.btn:active { transform: translateY(1px); }
-.btn-primary { background: var(--accent); color: var(--accent-ink); }
-.btn-primary:hover { opacity: 0.9; }
-.btn-ghost { background: transparent; border-color: var(--border); color: var(--text); }
-.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn:active { transform: translateY(1px) scale(0.98); }
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.btn-primary:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+.btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
 
 /* ---------- Hero ---------- */
 .hero {
@@ -219,9 +261,13 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 22px;
-  transition: transform 0.12s ease, border-color 0.15s, box-shadow 0.15s;
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.3s ease, box-shadow 0.3s ease;
 }
-.card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: var(--shadow); }
+.card:hover {
+  transform: translateY(-6px) scale(1.015);
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
 .project-card h3 { font-size: 1.2rem; margin: 12px 0 6px; letter-spacing: -0.01em; }
 .project-card p { color: var(--text-soft); font-size: 0.95rem; }
 
@@ -498,9 +544,19 @@ a.tag:hover { border-color: var(--accent); color: var(--accent); }
     position: absolute; top: 64px; left: 0; right: 0;
     flex-direction: column; align-items: stretch; gap: 4px;
     background: var(--bg); border-bottom: 1px solid var(--border);
-    padding: 12px 20px; display: none;
+    padding: 0 20px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), padding 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
   }
-  .nav.nav-open { display: flex; }
+  .nav.nav-open {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    padding: 12px 20px;
+  }
   .nav a { padding: 12px; }
   .theme-toggle { align-self: flex-start; margin-top: 6px; }
   .chapter-nav { flex-direction: column; }
