@@ -694,6 +694,23 @@ button.tag.is-active {
 }
 
 /* ===========================================================
+   Efek ketik (typing) pada judul hero
+   =========================================================== */
+[data-typing] { min-height: 1.05em; }
+.type-cursor {
+  display: inline-block;
+  width: 0.06em;
+  margin-left: 0.04em;
+  background: currentColor;
+  animation: type-blink 0.9s steps(1) infinite;
+}
+[data-typing] .type-cursor { height: 0.95em; vertical-align: -0.08em; }
+@keyframes type-blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .type-cursor { display: none; }
+}
+
+/* ===========================================================
    Transisi antar halaman (page transition)
    - Saat halaman DIBUKA: konten <main> fade-in + naik tipis.
    - Saat link internal DIKLIK: body diberi .is-leaving -> fade-out

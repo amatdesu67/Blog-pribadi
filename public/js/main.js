@@ -255,4 +255,27 @@
       observer.observe(item);
     });
   }
+
+  // --- Efek ketik (typing) pada judul hero ---
+  const typingEl = document.querySelector("[data-typing]");
+  if (typingEl && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const fullText = typingEl.textContent.trim();
+    typingEl.textContent = "";
+    const cursor = document.createElement("span");
+    cursor.className = "type-cursor";
+    cursor.setAttribute("aria-hidden", "true");
+    typingEl.appendChild(cursor);
+
+    let i = 0;
+    (function typeNext() {
+      if (i < fullText.length) {
+        cursor.insertAdjacentText("beforebegin", fullText.charAt(i));
+        i++;
+        setTimeout(typeNext, 70 + Math.random() * 60);
+      } else {
+        // Hapus kursor beberapa saat setelah selesai biar bersih.
+        setTimeout(() => cursor.remove(), 1800);
+      }
+    })();
+  }
 })();
