@@ -46,6 +46,13 @@
         }
         document.documentElement.setAttribute("data-theme", t);
       } catch (e) {}
+      // Tandai JS aktif & animasi diizinkan -> dipakai "reveal saat scroll"
+      // (elemen disembunyikan via CSS sebelum tampil supaya tidak kedip).
+      try {
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          document.documentElement.classList.add("reveal-ready");
+        }
+      } catch (e) {}
     })();
   </script>
 </head>

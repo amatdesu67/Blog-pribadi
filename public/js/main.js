@@ -256,6 +256,33 @@
     });
   }
 
+  // --- Reveal saat scroll (elegan) ---
+  // Menandai elemen konten utama, lalu memunculkannya saat masuk layar.
+  if (document.documentElement.classList.contains("reveal-ready")) {
+    const main = document.querySelector("main");
+    if (main) {
+      // Pilih blok konten level atas (lewati hero biar langsung tampil).
+      const targets = main.querySelectorAll(
+        ".section, .section-block, .profile-card, .stat-row, .price-grid, .cta-box, .article-header, .ebook-cover, .article-page article"
+      );
+      targets.forEach(el => el.classList.add("reveal"));
+
+      if ("IntersectionObserver" in window && targets.length) {
+        const obs = new IntersectionObserver((entries, o) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              o.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+        targets.forEach(el => obs.observe(el));
+      } else {
+        targets.forEach(el => el.classList.add("is-visible"));
+      }
+    }
+  }
+
   // --- Efek ketik (typing) pada judul hero ---
   const typingEl = document.querySelector("[data-typing]");
   if (typingEl && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
