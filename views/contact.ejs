@@ -40,7 +40,10 @@
       Pesan
       <textarea name="message" rows="6" required><%= values.message || '' %></textarea>
     </label>
-    <button class="btn btn-primary" type="submit">Kirim pesan</button>
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
+      <button class="btn btn-primary" type="submit">Kirim pesan</button>
+      <button class="btn btn-ghost" type="button" id="btnWhatsapp">Kirim via WhatsApp</button>
+    </div>
   </form>
 
   <div class="contact-alt">

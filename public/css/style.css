@@ -562,3 +562,133 @@ a.tag:hover { border-color: var(--accent); color: var(--accent); }
   .chapter-nav { flex-direction: column; }
   .chapter-nav-item, .chapter-nav-item.next { max-width: 100%; text-align: left; }
 }
+
+/* ===========================================================
+   Tambahan Fitur Premium: Terminal, Tag Filter, & Scroll Anim
+   =========================================================== */
+
+/* --- Gaya Tombol Tag Filter --- */
+button.tag {
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: var(--text-soft);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  padding: 6px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+button.tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+button.tag.is-active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+/* --- Animasi Timeline Perjalanan --- */
+.timeline-item {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.timeline-item.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Terminal Mini Interaktif (TKJ Special) --- */
+.terminal-container {
+  background: #0f141c;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  font-family: 'Consolas', 'Fira Code', 'Courier New', monospace;
+  margin-top: 14px;
+}
+[data-theme="dark"] .terminal-container {
+  border-color: #1f242c;
+  background: #090d16;
+}
+.terminal-header {
+  background: #1a202c;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+[data-theme="dark"] .terminal-header {
+  background: #111520;
+}
+.terminal-buttons {
+  display: flex;
+  gap: 6px;
+}
+.term-btn {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.term-btn.red { background: #ff5f56; }
+.term-btn.yellow { background: #ffbd2e; }
+.term-btn.green { background: #27c93f; }
+.terminal-title {
+  color: #a0aec0;
+  font-size: 0.8rem;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 500;
+}
+.terminal-body {
+  padding: 18px;
+  color: #cbd5e0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  height: 280px;
+  overflow-y: auto;
+  text-align: left;
+}
+.terminal-line {
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+}
+.term-highlight {
+  color: #319795;
+  font-weight: bold;
+}
+.term-command {
+  color: #ecc94b;
+  font-weight: bold;
+}
+.term-error {
+  color: #f56565;
+}
+.terminal-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.terminal-prompt {
+  color: #48bb78;
+  font-weight: bold;
+}
+#terminalInput {
+  background: transparent !important;
+  border: none !important;
+  color: #cbd5e0 !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  flex: 1;
+  padding: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}

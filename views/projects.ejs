@@ -5,9 +5,16 @@
   <h1>Projects</h1>
   <p class="page-lead">Proyek-proyek yang sudah kubuat sambil belajar.</p>
 
+  <!-- Tag Filter Kategori -->
+  <div class="tag-row tag-filter" style="margin-bottom: 24px;">
+    <button class="tag is-active" data-filter="all">Semua</button>
+    <button class="tag" data-filter="Web App">Web App</button>
+    <button class="tag" data-filter="Ebook">Ebook</button>
+  </div>
+
   <div class="card-grid">
     <% projects.forEach(function (p) { %>
-      <a class="card project-card" href="/projects/<%= p.slug %>">
+      <a class="card project-card" href="/projects/<%= p.slug %>" data-type="<%= p.type %>" style="transition: opacity 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);">
         <span class="badge"><%= p.type %></span>
         <h3><%= p.title %></h3>
         <p class="muted"><%= p.tagline %></p>
