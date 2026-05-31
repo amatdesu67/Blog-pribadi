@@ -257,17 +257,22 @@
   }
 
   // --- Reveal saat scroll (elegan) ---
-  // Menandai elemen konten utama, lalu memunculkannya saat masuk layar.
+  // Grid/list -> stagger antar anak (kartu). Blok tunggal -> reveal biasa.
+  // Hero TIDAK ikut (punya entrance sendiri saat load).
   if (document.documentElement.classList.contains("reveal-ready")) {
     const main = document.querySelector("main");
     if (main) {
-      // Pilih blok konten level atas (lewati hero biar langsung tampil).
-      const targets = main.querySelectorAll(
-        ".section, .section-block, .profile-card, .stat-row, .price-grid, .cta-box, .article-header, .ebook-cover, .article-page article"
+      const staggerEls = main.querySelectorAll(
+        ".card-grid, .article-list, .price-grid, .stat-row, .skill-list"
       );
-      targets.forEach(el => el.classList.add("reveal"));
+      const blockEls = main.querySelectorAll(
+        ".section-head, .ebook-highlight, .cta-box, .profile-card, .terminal-container, .prose, .ebook-cover, .article-header"
+      );
+      staggerEls.forEach(el => el.classList.add("reveal-stagger"));
+      blockEls.forEach(el => el.classList.add("reveal"));
 
-      if ("IntersectionObserver" in window && targets.length) {
+      const allTargets = [...staggerEls, ...blockEls];
+      if ("IntersectionObserver" in window && allTargets.length) {
         const obs = new IntersectionObserver((entries, o) => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -275,10 +280,10 @@
               o.unobserve(entry.target);
             }
           });
-        }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
-        targets.forEach(el => obs.observe(el));
+        }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
+        allTargets.forEach(el => obs.observe(el));
       } else {
-        targets.forEach(el => el.classList.add("is-visible"));
+        allTargets.forEach(el => el.classList.add("is-visible"));
       }
     }
   }
@@ -287,6 +292,9 @@
   const typingEl = document.querySelector("[data-typing]");
   if (typingEl && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const fullText = typingEl.textContent.trim();
+    // Kunci tinggi elemen dulu (sesuai teks penuh) supaya saat dikosongkan
+    // layout tidak loncat / collapse -> anti CLS, termasuk saat judul 2 baris.
+    typingEl.style.minHeight = typingEl.offsetHeight + "px";
     typingEl.textContent = "";
     const cursor = document.createElement("span");
     cursor.className = "type-cursor";

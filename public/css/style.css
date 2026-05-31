@@ -54,9 +54,11 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Efek transisi mulus saat perubahan tema gelap/terang */
-body, .site-header, .site-footer, .card, .btn, .theme-toggle, .nav a, .ebook-highlight, .cta-box, .profile-card, .stat, .skill-bar span, .timeline li::before, input, textarea {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+/* Efek transisi mulus saat perubahan tema gelap/terang.
+   Hanya properti warna — TANPA transform, supaya tidak ikut campur ke
+   animasi gerak elemen (hover, reveal) yang punya timing sendiri. */
+body, .site-header, .site-footer, .card, .btn, .theme-toggle, .nav a, .ebook-highlight, .cta-box, .profile-card, .stat, .skill-bar span, input, textarea {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -582,8 +584,8 @@ button.tag.is-active {
 /* --- Animasi Timeline Perjalanan --- */
 .timeline-item {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transform: translateY(20px);
+  transition: opacity 0.32s ease-out, transform 0.32s ease-out;
 }
 .timeline-item.active {
   opacity: 1;
@@ -684,7 +686,8 @@ button.tag.is-active {
 /* ===========================================================
    Efek ketik (typing) pada judul hero
    =========================================================== */
-[data-typing] { min-height: 1.05em; }
+/* min-height dikunci via JS (offsetHeight) sebelum teks dikosongkan -> anti CLS. */
+[data-typing] { display: block; }
 .type-cursor {
   display: inline-block;
   width: 0.06em;
