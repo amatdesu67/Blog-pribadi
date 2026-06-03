@@ -42,7 +42,7 @@ const projects = [
       "merangkum abstrak, dan menyimpan data pencarian.",
     tags: ["AI", "Sains", "Berpikir Kritis", "OpenAlex"],
     year: 2026,
-    url: "https://nalar67.vercel.app/",
+    url: "https://nalar-debat.vercel.app/",
     type: "Web App",
     featured: true,
   },

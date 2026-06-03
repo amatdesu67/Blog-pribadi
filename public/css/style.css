@@ -244,7 +244,7 @@ nav { display: flex; align-items: center; gap: 6px; }
 .link-more:hover { text-decoration: underline; }
 
 /* ---------- Kartu & grid ---------- */
-.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr)); gap: 16px; }
 .card {
   display: block;
   background: var(--surface);
@@ -301,7 +301,7 @@ a.tag:hover { border-color: var(--accent); color: var(--accent); }
 .ebook-highlight p { color: var(--text-soft); }
 
 /* ---------- Halaman Jasa: harga & CTA ---------- */
-.price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 16px; }
 .price-card {
   position: relative;
   display: flex; flex-direction: column;
@@ -551,6 +551,13 @@ a.tag:hover { border-color: var(--accent); color: var(--accent); }
   .theme-toggle { align-self: flex-start; margin-top: 6px; }
   .chapter-nav { flex-direction: column; }
   .chapter-nav-item, .chapter-nav-item.next { max-width: 100%; text-align: left; }
+
+  /* Terminal: lebih kecil & aman dari overflow di layar HP */
+  .terminal-body { font-size: 0.78rem; padding: 14px; height: 260px; overflow-x: hidden; }
+  .terminal-title { display: none; }   /* hindari tumpang tindih dgn tombol di layar sempit */
+
+  /* Section sedikit lebih rapat di mobile (tetap kelipatan 8) */
+  .section { padding: 32px 20px; }
 }
 
 /* ===========================================================
@@ -649,6 +656,7 @@ button.tag.is-active {
 .terminal-line {
   margin-bottom: 4px;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;   /* baris panjang (IP, skill bar) ikut wrap, tak meluber */
 }
 .term-highlight {
   color: #319795;
