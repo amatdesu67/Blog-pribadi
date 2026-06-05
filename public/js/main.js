@@ -129,7 +129,7 @@
           resultRow.className = "terminal-line";
           resultRow.innerHTML = result;
           terminalOutput.appendChild(resultRow);
-          
+
           // Beri baris kosong baru
           const spacing = document.createElement("div");
           spacing.innerHTML = "<br>";
@@ -185,33 +185,30 @@
       const nameInput = document.querySelector('input[name="name"]');
       const emailInput = document.querySelector('input[name="email"]');
       const messageInput = document.querySelector('textarea[name="message"]');
-      
+
       if (!nameInput.value.trim() || !messageInput.value.trim()) {
         alert("Mohon isi Nama dan Pesan terlebih dahulu sebelum mengirim via WhatsApp.");
         return;
       }
-      
+
       const name = encodeURIComponent(nameInput.value.trim());
       const email = encodeURIComponent(emailInput.value.trim() || "Tidak ada");
       const message = encodeURIComponent(messageInput.value.trim());
-      
+
       const waText = `Halo Riza, nama saya *${name}* (${email}).%0A%0APesan:%0A${message}`;
       const waUrl = `https://wa.me/6283842570278?text=${waText}`;
-      
+
       window.open(waUrl, "_blank");
     });
   }
 
   // --- Transisi pindah halaman (fade-out sebelum navigasi) ---
-  // Saat link internal diklik, body di-fade dulu lalu baru pindah,
-  // jadi perpindahan terasa mulus (bukan "njeglek").
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!prefersReduced) {
     document.addEventListener("click", function (e) {
       const a = e.target.closest("a");
       if (!a) return;
       const href = a.getAttribute("href");
-      // Lewati: link kosong, anchor (#), tab baru, atau domain luar.
       if (
         !href ||
         href.startsWith("#") ||
@@ -228,7 +225,6 @@
       }, 200);
     });
   }
-  // Saat kembali via tombol Back, pastikan halaman tampil lagi (bukan blank).
   window.addEventListener("pageshow", function () {
     document.body.classList.remove("is-leaving");
   });
@@ -236,12 +232,7 @@
   // --- Animasi Timeline Saat di-Scroll (About Page) ---
   const timelineItems = document.querySelectorAll(".timeline-item");
   if (timelineItems.length > 0) {
-    const observerOptions = {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.15
-    };
-
+    const observerOptions = { root: null, rootMargin: "0px", threshold: 0.15 };
     const observer = new IntersectionObserver((entries, observer) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -250,15 +241,10 @@
         }
       });
     }, observerOptions);
-
-    timelineItems.forEach(item => {
-      observer.observe(item);
-    });
+    timelineItems.forEach(item => observer.observe(item));
   }
 
   // --- Reveal saat scroll (elegan) ---
-  // Grid/list -> stagger antar anak (kartu). Blok tunggal -> reveal biasa.
-  // Hero TIDAK ikut (punya entrance sendiri saat load).
   if (document.documentElement.classList.contains("reveal-ready")) {
     const main = document.querySelector("main");
     if (main) {
@@ -292,8 +278,6 @@
   const typingEl = document.querySelector("[data-typing]");
   if (typingEl && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const fullText = typingEl.textContent.trim();
-    // Kunci tinggi elemen dulu (sesuai teks penuh) supaya saat dikosongkan
-    // layout tidak loncat / collapse -> anti CLS, termasuk saat judul 2 baris.
     typingEl.style.minHeight = typingEl.offsetHeight + "px";
     typingEl.textContent = "";
     const cursor = document.createElement("span");
@@ -308,9 +292,27 @@
         i++;
         setTimeout(typeNext, 70 + Math.random() * 60);
       } else {
-        // Hapus kursor beberapa saat setelah selesai biar bersih.
         setTimeout(() => cursor.remove(), 1800);
       }
     })();
   }
+
+  // --- Header transparan -> kaca saat di-scroll + bar progres scroll ---
+  const header = document.querySelector(".site-header");
+  const progress = document.getElementById("scrollProgress");
+  let ticking = false;
+  function onScrollChrome() {
+    const y = window.scrollY || document.documentElement.scrollTop || 0;
+    if (header) header.classList.toggle("is-scrolled", y > 12);
+    if (progress) {
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      progress.style.width = (max > 0 ? (y / max) * 100 : 0) + "%";
+    }
+    ticking = false;
+  }
+  window.addEventListener("scroll", function () {
+    if (!ticking) { window.requestAnimationFrame(onScrollChrome); ticking = true; }
+  }, { passive: true });
+  onScrollChrome();
 })();

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,6 +15,7 @@
   %>
   <title><%= pageTitle %></title>
   <meta name="description" content="<%= desc %>" />
+  <meta name="theme-color" content="#070709" />
   <% if (url) { %><link rel="canonical" href="<%= url %>" /><% } %>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
@@ -34,20 +35,20 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
-  <!-- Pasang tema sebelum halaman tampil supaya tidak 'kedip' (anti-FOUC). -->
+
+  <!-- Pasang tema sebelum halaman tampil supaya tidak 'kedip' (anti-FOUC).
+       Default: dark luxe. Pilihan pengguna (localStorage) tetap dihormati. -->
   <script>
     (function () {
       try {
         var t = localStorage.getItem("theme");
-        if (!t) {
-          t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        }
+        if (t !== "light" && t !== "dark") t = "dark";
         document.documentElement.setAttribute("data-theme", t);
       } catch (e) {}
-      // Tandai JS aktif & animasi diizinkan -> dipakai "reveal saat scroll"
-      // (elemen disembunyikan via CSS sebelum tampil supaya tidak kedip).
       try {
         if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
           document.documentElement.classList.add("reveal-ready");
@@ -57,3 +58,6 @@
   </script>
 </head>
 <body>
+  <!-- Bar progres scroll & panggung 3D global -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <canvas id="bg3d" aria-hidden="true"></canvas>

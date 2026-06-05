@@ -1,121 +1,193 @@
-// public/js/hero3d.js
-// Latar hero: jaringan node 3D (nyambung tema TKJ) yang berotasi mengikuti scroll.
-// Tanpa library — render live ke <canvas> (objek vektor ringan, jadi tak perlu
-// pre-render frame). Warna ikut tema (--text), hormati prefers-reduced-motion.
+/* =====================================================================
+   hero3d.js — Latar 3D sinematik global (Three.js)
+   - Starfield/partikel emas yang melayang + parallax ke mouse & scroll.
+   - Centerpiece kristal (icosahedron metalik emas) di area hero, dengan
+     wireframe bercahaya. Rotasi & posisinya digerakkan oleh scroll.
+   - Aktif di semua halaman (partikel); centerpiece hanya bila ada .hero.
+   - Degradasi anggun: mobile pakai lebih sedikit partikel; prefers-reduced
+     -motion -> render diam. Tanpa THREE -> tidak melakukan apa-apa.
+   ===================================================================== */
 (function () {
-  var canvas = document.getElementById("hero3d");
-  if (!canvas) return;
-  var ctx = canvas.getContext("2d");
-  var hero = canvas.parentElement;
+  var canvas = document.getElementById("bg3d");
+  if (!canvas || typeof THREE === "undefined") return;
 
   var reduce = false;
   try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  var isMobile = window.matchMedia("(max-width: 860px)").matches;
 
-  // Ambil warna tinta dari CSS variable --text (otomatis ikut tema terang/gelap).
-  function ink() {
-    var c = (getComputedStyle(document.documentElement)
-      .getPropertyValue("--text") || "").trim();
-    if (c[0] === "#") {
-      if (c.length === 4) c = "#" + c[1] + c[1] + c[2] + c[2] + c[3] + c[3];
-      var n = parseInt(c.slice(1), 16);
-      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  function isLight() { return document.documentElement.getAttribute("data-theme") === "light"; }
+
+  var renderer, scene, camera, particles, crystal, crystalWire, raf = 0;
+  var mouse = { x: 0, y: 0 }, target = { x: 0, y: 0 };
+  var scrollY = window.scrollY || 0;
+  var hasHero = !!document.querySelector(".hero");
+  var t0 = performance.now();
+
+  function init() {
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: !isMobile });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.z = 9;
+
+    buildParticles();
+    if (hasHero) buildCrystal();
+
+    scene.add(new THREE.AmbientLight(0xffffff, isLight() ? 0.65 : 0.35));
+    var key = new THREE.PointLight(0xffd98a, 2.4, 60);
+    key.position.set(6, 6, 8);
+    scene.add(key);
+    var rim = new THREE.PointLight(0x9aa6ff, 1.1, 60);
+    rim.position.set(-7, -3, 5);
+    scene.add(rim);
+
+    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("scroll", function () { scrollY = window.scrollY || 0; }, { passive: true });
+    if (!reduce && !isMobile) {
+      window.addEventListener("mousemove", function (e) {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = (e.clientY / window.innerHeight) * 2 - 1;
+      }, { passive: true });
     }
-    return [19, 19, 20];
-  }
-  var INK = ink();
+    new MutationObserver(function () {
+      if (particles) particles.material.opacity = isLight() ? 0.55 : 0.9;
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
-  // Sebar titik di dalam/permukaan bola (seed tetap -> bentuk konsisten).
-  var seed = 1337;
-  function rnd() { seed = (seed * 1664525 + 1013904223) & 0x7fffffff; return seed / 0x7fffffff; }
-  var N = 46, nodes = [];
-  for (var i = 0; i < N; i++) {
-    var u = rnd() * 2 - 1, t = rnd() * 6.2832, r = 0.55 + rnd() * 0.45, s = Math.sqrt(1 - u * u);
-    nodes.push([Math.cos(t) * s * r, u * r, Math.sin(t) * s * r]);
-  }
-  // Hubungkan tiap node ke 3 tetangga terdekat (sekali hitung).
-  var edges = [], seen = {};
-  for (var a = 0; a < N; a++) {
-    var d = [];
-    for (var b = 0; b < N; b++) if (b !== a) {
-      var dx = nodes[a][0] - nodes[b][0], dy = nodes[a][1] - nodes[b][1], dz = nodes[a][2] - nodes[b][2];
-      d.push([dx * dx + dy * dy + dz * dz, b]);
-    }
-    d.sort(function (p, q) { return p[0] - q[0]; });
-    for (var k = 0; k < 3; k++) {
-      var j = d[k][1], key = a < j ? a + "-" + j : j + "-" + a;
-      if (!seen[key]) { seen[key] = 1; edges.push([a, j]); }
-    }
-  }
-
-  var W = 0, H = 0, dpr = 1;
-  function resize() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = hero.clientWidth; H = hero.clientHeight;
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    canvas.style.width = W + "px"; canvas.style.height = H + "px";
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  var TILT = 0.42;
-  function proj(p, ang) {
-    var ca = Math.cos(ang), sa = Math.sin(ang);
-    var x1 = p[0] * ca + p[2] * sa, z1 = -p[0] * sa + p[2] * ca;
-    var cb = Math.cos(TILT), sb = Math.sin(TILT);
-    return [x1, p[1] * cb - z1 * sb, p[1] * sb + z1 * cb];
-  }
-
-  function draw(ang) {
-    if (!W || !H) return;
-    ctx.clearRect(0, 0, W, H);
-    var ox = W * 0.5, oy = H * 0.5, R = Math.min(W, H) * 0.46;
-    var sc = nodes.map(function (p) {
-      var q = proj(p, ang), per = 1.6 / (1.6 - q[2] * 0.6);
-      return [ox + q[0] * R * per, oy + q[1] * R * per, q[2]];
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) stop(); else play();
     });
-    for (var e = 0; e < edges.length; e++) {
-      var A = sc[edges[e][0]], B = sc[edges[e][1]];
-      var dep = (A[2] + B[2]) * 0.5, al = 0.10 + (dep + 1) * 0.06;
-      ctx.strokeStyle = "rgba(" + INK[0] + "," + INK[1] + "," + INK[2] + "," + al.toFixed(3) + ")";
-      ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(A[0], A[1]); ctx.lineTo(B[0], B[1]); ctx.stroke();
+
+    requestAnimationFrame(function () { canvas.classList.add("is-ready"); });
+
+    if (reduce) renderOnce();
+    else play();
+  }
+
+  function buildParticles() {
+    var COUNT = isMobile ? 700 : 1700;
+    var geo = new THREE.BufferGeometry();
+    var pos = new Float32Array(COUNT * 3);
+    var col = new Float32Array(COUNT * 3);
+    var gold = new THREE.Color(0xe7c878);
+    var pale = new THREE.Color(0xfff4d6);
+    var blue = new THREE.Color(0x8a93c8);
+    for (var i = 0; i < COUNT; i++) {
+      var i3 = i * 3;
+      pos[i3]     = (Math.random() - 0.5) * 34;
+      pos[i3 + 1] = (Math.random() - 0.5) * 22;
+      pos[i3 + 2] = (Math.random() - 0.5) * 22 - 4;
+      var r = Math.random();
+      var c = r < 0.7 ? gold : (r < 0.9 ? pale : blue);
+      col[i3] = c.r; col[i3 + 1] = c.g; col[i3 + 2] = c.b;
     }
-    var ord = sc.map(function (p, i) { return i; }).sort(function (i, j) { return sc[i][2] - sc[j][2]; });
-    for (var o = 0; o < ord.length; o++) {
-      var n = sc[ord[o]], dd = (n[2] + 1) / 2, rad = 1.4 + dd * 2.4, al2 = 0.30 + dd * 0.58;
-      ctx.fillStyle = "rgba(" + INK[0] + "," + INK[1] + "," + INK[2] + "," + al2.toFixed(3) + ")";
-      ctx.beginPath(); ctx.arc(n[0], n[1], rad, 0, 6.2832); ctx.fill();
+    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+    var mat = new THREE.PointsMaterial({
+      size: isMobile ? 0.05 : 0.045,
+      vertexColors: true,
+      transparent: true,
+      opacity: isLight() ? 0.55 : 0.9,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true
+    });
+    particles = new THREE.Points(geo, mat);
+    scene.add(particles);
+  }
+
+  function buildCrystal() {
+    var R = isMobile ? 1.5 : 2.0;
+    var geo = new THREE.IcosahedronGeometry(R, 1);
+    var mat = new THREE.MeshStandardMaterial({
+      color: 0xc79a44,
+      metalness: 0.95,
+      roughness: 0.18,
+      flatShading: true,
+      transparent: true,
+      opacity: 0.92,
+      emissive: 0x4a3410,
+      emissiveIntensity: 0.5
+    });
+    crystal = new THREE.Mesh(geo, mat);
+
+    var wireGeo = new THREE.IcosahedronGeometry(R * 1.04, 1);
+    var wireMat = new THREE.MeshBasicMaterial({
+      color: 0xf7e8bf,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.28
+    });
+    crystalWire = new THREE.Mesh(wireGeo, wireMat);
+
+    var group = new THREE.Group();
+    group.add(crystal);
+    group.add(crystalWire);
+    group.position.x = isMobile ? 0 : 3.1;
+    group.position.y = isMobile ? 2.4 : 0.2;
+    group.rotation.set(0.4, 0.2, 0);
+    crystal._group = group;
+    scene.add(group);
+  }
+
+  function onResize() {
+    if (!renderer) return;
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    if (reduce) renderOnce();
+  }
+
+  function frame(now) {
+    var t = (now - t0) * 0.001;
+    target.x += (mouse.x - target.x) * 0.05;
+    target.y += (mouse.y - target.y) * 0.05;
+
+    if (particles) {
+      particles.rotation.y = t * 0.02 + target.x * 0.25;
+      particles.rotation.x = target.y * 0.15 - scrollY * 0.00012;
+      particles.position.y = scrollY * 0.0011;
     }
+
+    if (crystal) {
+      var g = crystal._group;
+      g.rotation.y = t * 0.18 + scrollY * 0.0016 + target.x * 0.3;
+      g.rotation.x = 0.35 + Math.sin(t * 0.4) * 0.12 + target.y * 0.2;
+      crystalWire.rotation.y = -t * 0.1;
+      crystalWire.rotation.x = t * 0.06;
+      var baseY = isMobile ? 2.4 : 0.2;
+      g.position.y = baseY + Math.sin(t * 0.6) * 0.18 + scrollY * 0.004;
+      var fade = Math.max(0, 1 - scrollY / (window.innerHeight * 0.85));
+      crystal.material.opacity = 0.92 * fade;
+      crystalWire.material.opacity = 0.28 * fade;
+      g.visible = fade > 0.02;
+    }
+
+    camera.position.x += (target.x * 0.6 - camera.position.x) * 0.05;
+    camera.position.y += (-target.y * 0.4 - camera.position.y) * 0.05;
+    camera.lookAt(0, 0, 0);
+
+    renderer.render(scene, camera);
+    raf = requestAnimationFrame(frame);
   }
 
-  // Posisi scroll -> 0..1 (saat hero lewat layar).
-  var frac = 0;
-  function onScroll() {
-    var rect = hero.getBoundingClientRect();
-    var range = (hero.offsetHeight + window.innerHeight) || 1;
-    frac = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / range));
-    if (reduce) draw(frac * 6.2832);
+  function renderOnce() {
+    if (!renderer) return;
+    if (particles) particles.rotation.y = 0.2;
+    renderer.render(scene, camera);
   }
 
-  var t = 0, raf;
-  function loop() {
-    t += 0.0010;                       // hanyutan pelan saat diam
-    draw(t * 6.2832 + frac * 6.2832);  // + putaran dari scroll
-    raf = requestAnimationFrame(loop);
+  function play() { if (!reduce && !raf) raf = requestAnimationFrame(frame); }
+  function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+
+  try {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  } catch (e) {
+    if (canvas) canvas.style.display = "none";
   }
-
-  function start() {
-    resize(); onScroll();
-    if (reduce) { draw(frac * 6.2832); }
-    else { cancelAnimationFrame(raf); loop(); }
-  }
-
-  window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", function () { resize(); onScroll(); });
-  window.addEventListener("load", function () { resize(); onScroll(); });
-  // Tema diganti -> ambil warna baru.
-  new MutationObserver(function () { INK = ink(); if (reduce) draw(frac * 6.2832); })
-    .observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-
-  if (document.readyState !== "loading") start();
-  else document.addEventListener("DOMContentLoaded", start);
 })();

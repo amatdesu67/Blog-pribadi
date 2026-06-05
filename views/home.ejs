@@ -2,31 +2,30 @@
 <%- include('partials/header') %>
 
 <main>
-  <!-- HERO -->
+  <!-- ===== HERO ===== -->
   <section class="hero container">
-    <!-- Latar jaringan node 3D (berotasi saat scroll). Murni dekorasi. -->
-    <canvas id="hero3d" aria-hidden="true"></canvas>
     <div class="hero-text">
-      <p class="eyebrow">Halo, namaku</p>
+      <span class="status-pill"><span class="status-dot"></span> Terbuka untuk project &amp; magang</span>
+      <p class="eyebrow">Halo, aku</p>
       <h1 data-typing>Ahmad Riza Rudi</h1>
       <p class="hero-lead">
-        Siswa SMK jurusan TKJ, 18 tahun. Lagi serius belajar bikin web
-        (Node.js, Express, SQLite) dan suka menulis. Ini tempatku menaruh
-        proyek dan catatan belajar.
+        Web developer &amp; penulis — siswa SMK TKJ, 18 tahun. Aku membangun
+        website yang rapi, cepat, dan beneran jalan dengan Node.js, Express &amp;
+        SQLite. Ini ruang tempatku menaruh karya dan catatan belajar.
       </p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="/projects">Lihat Projects</a>
+        <a class="btn btn-primary" href="/projects">Lihat Karya</a>
         <a class="btn btn-ghost" href="/contact">Hubungi Aku</a>
       </div>
     </div>
 
-    <!-- Ilustrasi. Dua pose: berdiri (default) & melambai.
-         Hover (desktop) atau klik/tap (HP) -> berganti ke pose melambai. -->
-    <div class="hero-art" title="Sapa balik! (hover / klik)">
-      <img class="art-stand" src="/img/hero.png" alt="Ilustrasi Ahmad Riza Rudi"
-           width="1024" height="1024" loading="eager" onerror="this.remove()" />
-      <img class="art-wave" src="/img/hero-wave.png" alt="" aria-hidden="true"
-           width="1024" height="1024" loading="eager" onerror="this.remove()" />
+    <!-- Panggung visual: medali monogram kaca; kristal 3D melayang di belakang
+         (dirender oleh #bg3d global). -->
+    <div class="hero-art" aria-hidden="true">
+      <div class="hero-orb">
+        <span class="hero-orb-mono">R</span>
+        <span class="hero-orb-tag">Est. 2026</span>
+      </div>
     </div>
   </section>
 
@@ -108,5 +107,4 @@
   </section>
 </main>
 
-<script src="/js/hero3d.js" defer></script>
 <%- include('partials/footer') %>
