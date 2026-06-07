@@ -1,19 +1,14 @@
 /* =====================================================================
    hero3d.js — Latar 3D sinematik (Three.js r170 + three-vrm v3, ES module)
    - Starfield partikel emas (parallax mouse + scroll).
-   - Karakter VRM 1.0 (Chizuru.min.vrm): animasi IDLE natural (loop Relax.vrma)
-     -> gerak luwes kedua tangan (tanpa paksaan tulang). + senyum tipis & kedip/wink.
+   - Karakter VRM 1.0 (Chizuru.min.vrm): pose TENANG tangan di belakang
+     (statis + napas halus) -> elegan, tanpa clip yg stretch. Senyum tipis & kedip/wink.
    - Karakter MEMUDAR saat scroll biar nggak nabrak konten.
    - Loader % saat model dimuat. Lazy-load. Reduced-motion: render diam.
    ===================================================================== */
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
-import {
-  VRMAnimationLoaderPlugin,
-  VRMLookAtQuaternionProxy,
-  createVRMAnimationClip,
-} from "@pixiv/three-vrm-animation";
+import { VRMLoaderPlugin, VRMUtils, VRMHumanBoneName } from "@pixiv/three-vrm";
 
 const canvas = document.getElementById("bg3d");
 
@@ -22,17 +17,23 @@ let isMobile = window.matchMedia("(max-width: 860px)").matches;
 const isLight = () => document.documentElement.getAttribute("data-theme") === "light";
 const hideLoader = () => { const l = document.getElementById("vrmLoading"); if (l) l.classList.add("is-hidden"); };
 
-const VRM_URL  = "/Chizuru.min.vrm";
-const IDLE_URL = "/vrma/Relax.vrma";       // animasi utama (idle natural)
-const ALT_URL  = "/vrma/LookAround.vrma";  // cadangan kalau Relax gagal
+const VRM_URL = "/Chizuru.min.vrm";
 
-// Ekspresi (mudah disetel). happy = senyum tapi buka mulut; relaxed = lembut/tertutup.
+// Ekspresi (mudah disetel). happy = senyum tp buka mulut; relaxed = lembut/tertutup.
 const SMILE_RELAX = 0.55;
 const SMILE_HAPPY = 0.08;
 
+// Pose "tangan di belakang" (mudah disetel):
+const ARM_DOWN = 1.25;  // lengan atas turun nempel badan (z)
+const ARM_BACK = 0.35;  // putar lengan atas ke BELAKANG (y). kecilin kalau kebablasan
+const ELBOW    = 1.45;  // tekuk siku -> lengan bawah ke belakang. kalau malah ke DEPAN, balik tandanya (-1.45)
+
 let renderer, scene, camera, particles, raf = 0;
-let vrm = null, mixer = null, entrance = 0;
+let vrm = null, entrance = 0;
 let vrmMats = [];
+let spine = null, chest = null;
+let rShoulder = null, rUpperArm = null, rLowerArm = null, rHand = null;
+let lShoulder = null, lUpperArm = null, lLowerArm = null, lHand = null;
 const clock = new THREE.Clock();
 const mouse = { x: 0, y: 0 }, target = { x: 0, y: 0 };
 let scrollY = window.scrollY || 0;
@@ -115,7 +116,6 @@ function buildParticles() {
 async function loadCharacter() {
   const loader = new GLTFLoader();
   loader.register((p) => new VRMLoaderPlugin(p));
-  loader.register((p) => new VRMAnimationLoaderPlugin(p));
 
   try {
     const gltf = await loader.loadAsync(VRM_URL, (e) => {
@@ -130,11 +130,6 @@ async function loadCharacter() {
 
     try { VRMUtils.removeUnnecessaryVertices(gltf.scene); } catch (e) {}
     try { VRMUtils.combineSkeletons(gltf.scene); } catch (e) {}
-    try {
-      const proxy = new VRMLookAtQuaternionProxy(vrm.lookAt);
-      proxy.name = "lookAtQuaternionProxy";
-      vrm.scene.add(proxy);
-    } catch (e) {}
 
     vrmMats = [];
     vrm.scene.traverse((o) => {
@@ -145,37 +140,41 @@ async function loadCharacter() {
       }
     });
 
+    try {
+      const HB = VRMHumanBoneName, gb = (n) => vrm.humanoid.getNormalizedBoneNode(n);
+      spine = gb(HB.Spine); chest = gb(HB.Chest);
+      rShoulder = gb(HB.RightShoulder); rUpperArm = gb(HB.RightUpperArm); rLowerArm = gb(HB.RightLowerArm); rHand = gb(HB.RightHand);
+      lShoulder = gb(HB.LeftShoulder); lUpperArm = gb(HB.LeftUpperArm); lLowerArm = gb(HB.LeftLowerArm); lHand = gb(HB.LeftHand);
+    } catch (e) {}
+
     const bp = basePos();
     vrm.scene.position.set(bp.x, bp.y, 0);
     vrm.scene.scale.setScalar(bp.s);
     vrm.scene.rotation.y = 0;
     scene.add(vrm.scene);
 
-    mixer = new THREE.AnimationMixer(vrm.scene);
     hideLoader();
-
-    let clip = await loadClip(loader, IDLE_URL);
-    if (!clip) clip = await loadClip(loader, ALT_URL);
-    if (clip) {
-      const act = mixer.clipAction(clip);
-      act.setLoop(THREE.LoopRepeat, Infinity);
-      act.play();
-    }
-
-    if (reduce) { mixer.update(0); vrm.update(0); renderOnce(); }
+    if (reduce) { poseBehindBack(0); vrm.update(0); renderOnce(); }
   } catch (err) {
-    console.error("Gagal memuat VRM/animasi:", err);
+    console.error("Gagal memuat VRM:", err);
     hideLoader();
   }
 }
 
-function loadClip(loader, url) {
-  return loader.loadAsync(url)
-    .then((g) => {
-      const a = g.userData.vrmAnimations && g.userData.vrmAnimations[0];
-      return a ? createVRMAnimationClip(a, vrm) : null;
-    })
-    .catch((e) => { console.warn("VRMA gagal:", url, e); return null; });
+function poseBehindBack(t) {
+  const br = Math.sin((t || 0) * 1.3); // napas
+  if (spine) spine.rotation.set(br * 0.012, 0, 0);
+  if (chest) chest.rotation.set(br * 0.008, 0, 0);
+  // kanan
+  if (rShoulder) rShoulder.rotation.set(0, 0, 0);
+  if (rUpperArm) rUpperArm.rotation.set(0, ARM_BACK, ARM_DOWN + br * 0.03);
+  if (rLowerArm) rLowerArm.rotation.set(0, ELBOW, 0);
+  if (rHand) rHand.rotation.set(0, 0, 0);
+  // kiri (mirror)
+  if (lShoulder) lShoulder.rotation.set(0, 0, 0);
+  if (lUpperArm) lUpperArm.rotation.set(0, -ARM_BACK, -ARM_DOWN - br * 0.03);
+  if (lLowerArm) lLowerArm.rotation.set(0, -ELBOW, 0);
+  if (lHand) lHand.rotation.set(0, 0, 0);
 }
 
 function onResize() {
@@ -214,7 +213,7 @@ function frame(now) {
   }
 
   if (vrm) {
-    if (mixer) mixer.update(dt);
+    poseBehindBack(t);
 
     const em = vrm.expressionManager;
     if (em) {
