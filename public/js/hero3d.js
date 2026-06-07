@@ -2,7 +2,8 @@
    hero3d.js — Latar 3D sinematik (Three.js r170 + three-vrm v3, ES module)
    - Starfield partikel emas (parallax mouse + scroll).
    - Karakter VRM 1.0 (Chizuru.min.vrm): MELAMBAI satu tangan (loop Goodbye,
-     lengan kiri dipaksa turun), ekspresi senyum tipis + kedip/wink.
+     lengan + bahu kiri ditahan turun), ekspresi senyum tipis + kedip/wink.
+   - Karakter MEMUDAR saat scroll biar nggak nabrak konten.
    - Loader % saat model dimuat. Lazy-load. Reduced-motion: render diam.
    ===================================================================== */
 import * as THREE from "three";
@@ -25,11 +26,14 @@ const VRM_URL  = "/Chizuru.min.vrm";
 const IDLE_URL = "/vrma/Relax.vrma";
 const WAVE_URL = "/vrma/Goodbye.vrma";
 
-const SMILE = 0.35; // senyum tipis MULUT TERTUTUP via "relaxed" (happy buka mulut). 0=datar
+// Ekspresi (mudah disetel). happy = senyum tapi buka mulut; relaxed = lembut/tertutup.
+const SMILE_RELAX = 0.55;
+const SMILE_HAPPY = 0.08;
 
 let renderer, scene, camera, particles, raf = 0;
 let vrm = null, mixer = null, entrance = 0;
-let lUpperArm = null, lLowerArm = null, lHand = null;
+let lShoulder = null, lUpperArm = null, lLowerArm = null, lHand = null;
+let vrmMats = [];
 const clock = new THREE.Clock();
 const mouse = { x: 0, y: 0 }, target = { x: 0, y: 0 };
 let scrollY = window.scrollY || 0;
@@ -132,11 +136,21 @@ async function loadCharacter() {
       proxy.name = "lookAtQuaternionProxy";
       vrm.scene.add(proxy);
     } catch (e) {}
-    vrm.scene.traverse((o) => { if (o.isMesh) o.frustumCulled = false; });
 
-    // Bone lengan kiri -> dipaksa turun di tiap frame (biar lambai cuma tangan kanan).
+    // Kumpulkan material (utk fade saat scroll) + matikan culling.
+    vrmMats = [];
+    vrm.scene.traverse((o) => {
+      if (o.isMesh) {
+        o.frustumCulled = false;
+        const arr = Array.isArray(o.material) ? o.material : [o.material];
+        for (const m of arr) { if (m) { m.userData._ot = m.transparent; vrmMats.push(m); } }
+      }
+    });
+
+    // Bone lengan + bahu kiri -> ditahan turun (lambai cuma tangan kanan).
     try {
       const HB = VRMHumanBoneName;
+      lShoulder = vrm.humanoid.getNormalizedBoneNode(HB.LeftShoulder);
       lUpperArm = vrm.humanoid.getNormalizedBoneNode(HB.LeftUpperArm);
       lLowerArm = vrm.humanoid.getNormalizedBoneNode(HB.LeftLowerArm);
       lHand = vrm.humanoid.getNormalizedBoneNode(HB.LeftHand);
@@ -162,7 +176,7 @@ async function loadCharacter() {
     if (wave) {
       wave.setLoop(THREE.LoopRepeat, Infinity);
       wave.clampWhenFinished = false;
-      wave.timeScale = 0.8; // perlambat -> lebih halus/natural
+      wave.timeScale = 0.8;
       wave.play();
     } else if (idle) {
       idle.play();
@@ -176,8 +190,9 @@ async function loadCharacter() {
 }
 
 function applyLeftArmDown(t) {
-  // Override pose lengan kiri ke posisi turun (A-pose) + napas halus (biar tak beku).
+  // Tahan bahu + lengan kiri di posisi turun (A-pose) + napas halus (anti beku & anti keseleo).
   const br = Math.sin((t || 0) * 1.4);
+  if (lShoulder) lShoulder.rotation.set(0, 0, 0);
   if (lUpperArm) lUpperArm.rotation.set(0.1 + br * 0.02, 0.15, -1.35 + br * 0.05);
   if (lLowerArm) lLowerArm.rotation.set(0, 0, -0.1 + br * 0.03);
   if (lHand) lHand.rotation.set(0, 0, 0);
@@ -206,6 +221,15 @@ function onResize() {
   if (reduce) renderOnce();
 }
 
+function setCharFade(cf) {
+  const fading = cf < 0.99;
+  for (let i = 0; i < vrmMats.length; i++) {
+    const m = vrmMats[i];
+    if (fading) { m.transparent = true; m.opacity = cf; m.depthWrite = false; }
+    else { m.transparent = m.userData._ot; m.opacity = 1; m.depthWrite = true; }
+  }
+}
+
 function frame(now) {
   const t = (now - t0) * 0.001;
   const dt = clock.getDelta();
@@ -224,8 +248,8 @@ function frame(now) {
 
     const em = vrm.expressionManager;
     if (em) {
-      em.setValue("happy", 0);            // happy buka mulut -> matikan
-      em.setValue("relaxed", SMILE);       // senyum tipis (mulut tertutup)
+      em.setValue("happy", SMILE_HAPPY);
+      em.setValue("relaxed", SMILE_RELAX);
       nextBlink -= dt;
       if (nextBlink <= 0) { blinkVal = 1; nextBlink = 2.4 + Math.random() * 3.2; winkMode = Math.random() < 0.4; }
       blinkVal += (0 - blinkVal) * Math.min(1, dt * 11);
@@ -233,13 +257,17 @@ function frame(now) {
       else { em.setValue("blink", blinkVal); em.setValue("blinkLeft", 0); }
     }
 
+    // Fade karakter saat scroll (hilang dalam ~setengah layar) -> nggak nabrak konten.
+    let cf = 1 - scrollY / (window.innerHeight * 0.5);
+    cf = Math.max(0, Math.min(1, cf));
+    vrm.scene.visible = cf > 0.01;
+    setCharFade(cf);
+
     entrance += (1 - entrance) * Math.min(1, dt * 2.2);
     const bp = basePos();
-    const fade = Math.max(0, 1 - scrollY / (window.innerHeight * 0.85));
-    vrm.scene.visible = fade > 0.02;
     vrm.scene.scale.setScalar(bp.s * (0.92 + 0.08 * entrance));
     vrm.scene.position.x = bp.x;
-    vrm.scene.position.y = bp.y - scrollY * 0.003 + (1 - entrance) * -0.5;
+    vrm.scene.position.y = bp.y - scrollY * 0.002 + (1 - entrance) * -0.5;
     vrm.update(dt);
   }
 
