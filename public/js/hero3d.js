@@ -25,8 +25,8 @@ const SMILE_HAPPY = 0.08;
 
 // Pose "tangan di belakang" (mudah disetel):
 const ARM_DOWN = 1.25;  // lengan atas turun nempel badan (z)
-const ARM_BACK = 0.35;  // putar lengan atas ke BELAKANG (y). kecilin kalau kebablasan
-const ELBOW    = 1.45;  // tekuk siku -> lengan bawah ke belakang. kalau malah ke DEPAN, balik tandanya (-1.45)
+const ARM_BACK = 0.45;  // putar lengan atas ke BELAKANG (y)
+const ELBOW    = -1.5;  // tekuk siku ke BELAKANG (tangan ketemu di belakang punggung)
 
 let renderer, scene, camera, particles, raf = 0;
 let vrm = null, entrance = 0;
