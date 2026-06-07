@@ -1,14 +1,14 @@
 /* =====================================================================
    hero3d.js — Latar 3D sinematik (Three.js r170 + three-vrm v3, ES module)
    - Starfield partikel emas (parallax mouse + scroll).
-   - Karakter VRM 1.0 (Chizuru.min.vrm): MELAMBAI satu tangan (loop Goodbye,
-     lengan + bahu kiri ditahan turun), ekspresi senyum tipis + kedip/wink.
+   - Karakter VRM 1.0 (Chizuru.min.vrm): animasi IDLE natural (loop Relax.vrma)
+     -> gerak luwes kedua tangan (tanpa paksaan tulang). + senyum tipis & kedip/wink.
    - Karakter MEMUDAR saat scroll biar nggak nabrak konten.
    - Loader % saat model dimuat. Lazy-load. Reduced-motion: render diam.
    ===================================================================== */
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { VRMLoaderPlugin, VRMUtils, VRMHumanBoneName } from "@pixiv/three-vrm";
+import { VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
 import {
   VRMAnimationLoaderPlugin,
   VRMLookAtQuaternionProxy,
@@ -23,8 +23,8 @@ const isLight = () => document.documentElement.getAttribute("data-theme") === "l
 const hideLoader = () => { const l = document.getElementById("vrmLoading"); if (l) l.classList.add("is-hidden"); };
 
 const VRM_URL  = "/Chizuru.min.vrm";
-const IDLE_URL = "/vrma/Relax.vrma";
-const WAVE_URL = "/vrma/Goodbye.vrma";
+const IDLE_URL = "/vrma/Relax.vrma";       // animasi utama (idle natural)
+const ALT_URL  = "/vrma/LookAround.vrma";  // cadangan kalau Relax gagal
 
 // Ekspresi (mudah disetel). happy = senyum tapi buka mulut; relaxed = lembut/tertutup.
 const SMILE_RELAX = 0.55;
@@ -32,7 +32,6 @@ const SMILE_HAPPY = 0.08;
 
 let renderer, scene, camera, particles, raf = 0;
 let vrm = null, mixer = null, entrance = 0;
-let lShoulder = null, lUpperArm = null, lLowerArm = null, lHand = null;
 let vrmMats = [];
 const clock = new THREE.Clock();
 const mouse = { x: 0, y: 0 }, target = { x: 0, y: 0 };
@@ -137,7 +136,6 @@ async function loadCharacter() {
       vrm.scene.add(proxy);
     } catch (e) {}
 
-    // Kumpulkan material (utk fade saat scroll) + matikan culling.
     vrmMats = [];
     vrm.scene.traverse((o) => {
       if (o.isMesh) {
@@ -146,15 +144,6 @@ async function loadCharacter() {
         for (const m of arr) { if (m) { m.userData._ot = m.transparent; vrmMats.push(m); } }
       }
     });
-
-    // Bone lengan + bahu kiri -> ditahan turun (lambai cuma tangan kanan).
-    try {
-      const HB = VRMHumanBoneName;
-      lShoulder = vrm.humanoid.getNormalizedBoneNode(HB.LeftShoulder);
-      lUpperArm = vrm.humanoid.getNormalizedBoneNode(HB.LeftUpperArm);
-      lLowerArm = vrm.humanoid.getNormalizedBoneNode(HB.LeftLowerArm);
-      lHand = vrm.humanoid.getNormalizedBoneNode(HB.LeftHand);
-    } catch (e) {}
 
     const bp = basePos();
     vrm.scene.position.set(bp.x, bp.y, 0);
@@ -165,37 +154,19 @@ async function loadCharacter() {
     mixer = new THREE.AnimationMixer(vrm.scene);
     hideLoader();
 
-    const [idleClip, waveClip] = await Promise.all([
-      loadClip(loader, IDLE_URL),
-      loadClip(loader, WAVE_URL),
-    ]);
-
-    const wave = waveClip ? mixer.clipAction(waveClip) : null;
-    const idle = idleClip ? mixer.clipAction(idleClip) : null;
-
-    if (wave) {
-      wave.setLoop(THREE.LoopRepeat, Infinity);
-      wave.clampWhenFinished = false;
-      wave.timeScale = 0.8;
-      wave.play();
-    } else if (idle) {
-      idle.play();
+    let clip = await loadClip(loader, IDLE_URL);
+    if (!clip) clip = await loadClip(loader, ALT_URL);
+    if (clip) {
+      const act = mixer.clipAction(clip);
+      act.setLoop(THREE.LoopRepeat, Infinity);
+      act.play();
     }
 
-    if (reduce) { mixer.update(0); applyLeftArmDown(0); vrm.update(0); renderOnce(); }
+    if (reduce) { mixer.update(0); vrm.update(0); renderOnce(); }
   } catch (err) {
     console.error("Gagal memuat VRM/animasi:", err);
     hideLoader();
   }
-}
-
-function applyLeftArmDown(t) {
-  // Tahan bahu + lengan kiri di posisi turun (A-pose) + napas halus (anti beku & anti keseleo).
-  const br = Math.sin((t || 0) * 1.4);
-  if (lShoulder) lShoulder.rotation.set(0, 0, 0);
-  if (lUpperArm) lUpperArm.rotation.set(0.1 + br * 0.02, 0.15, -1.35 + br * 0.05);
-  if (lLowerArm) lLowerArm.rotation.set(0, 0, -0.1 + br * 0.03);
-  if (lHand) lHand.rotation.set(0, 0, 0);
 }
 
 function loadClip(loader, url) {
@@ -244,7 +215,6 @@ function frame(now) {
 
   if (vrm) {
     if (mixer) mixer.update(dt);
-    applyLeftArmDown(t); // override sesudah mixer, sebelum vrm.update
 
     const em = vrm.expressionManager;
     if (em) {
@@ -257,7 +227,6 @@ function frame(now) {
       else { em.setValue("blink", blinkVal); em.setValue("blinkLeft", 0); }
     }
 
-    // Fade karakter saat scroll (hilang dalam ~setengah layar) -> nggak nabrak konten.
     let cf = 1 - scrollY / (window.innerHeight * 0.5);
     cf = Math.max(0, Math.min(1, cf));
     vrm.scene.visible = cf > 0.01;
