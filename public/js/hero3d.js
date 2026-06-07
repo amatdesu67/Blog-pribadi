@@ -1,10 +1,9 @@
 /* =====================================================================
    hero3d.js — Latar 3D sinematik (Three.js r170 + three-vrm v3, ES module)
    - Starfield partikel emas (parallax mouse + scroll).
-   - Karakter VRM 1.0 (Chizuru.min.vrm) digerakkan ANIMASI VRMA: lambai
-     (Goodbye) sekali saat masuk, lalu idle santai (Relax) berulang.
-   - Ekspresi senyum genit + kedip/wink. Loader % saat model dimuat.
-   - Lazy-load (requestIdleCallback). Reduced-motion: render diam.
+   - Karakter VRM 1.0 (Chizuru.min.vrm): MELAMBAI terus (loop Goodbye.vrma),
+     ekspresi senyum tipis + kedip/wink.
+   - Loader % saat model dimuat. Lazy-load. Reduced-motion: render diam.
    ===================================================================== */
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -22,7 +21,7 @@ let isMobile = window.matchMedia("(max-width: 860px)").matches;
 const isLight = () => document.documentElement.getAttribute("data-theme") === "light";
 const hideLoader = () => { const l = document.getElementById("vrmLoading"); if (l) l.classList.add("is-hidden"); };
 
-const VRM_URL  = "/Chizuru.min.vrm"; // versi terkompres (tekstur WebP 1024)
+const VRM_URL  = "/Chizuru.min.vrm";
 const IDLE_URL = "/vrma/Relax.vrma";
 const WAVE_URL = "/vrma/Goodbye.vrma";
 
@@ -57,7 +56,6 @@ function init() {
   const rim = new THREE.PointLight(0x9fb4ff, 2.4, 70); rim.position.set(-6, 2, -5); scene.add(rim);
   const fill = new THREE.DirectionalLight(0xffffff, 0.6); fill.position.set(-2, 0, 8); scene.add(fill);
 
-  // Lazy-load karakter: tunggu browser idle dulu supaya teks/partikel hero tampil instan.
   if (hasHero) {
     const startLoad = () => loadCharacter();
     if ("requestIdleCallback" in window) requestIdleCallback(startLoad, { timeout: 1500 });
@@ -147,25 +145,16 @@ async function loadCharacter() {
       loadClip(loader, WAVE_URL),
     ]);
 
-    const idle = idleClip ? mixer.clipAction(idleClip) : null;
     const wave = waveClip ? mixer.clipAction(waveClip) : null;
+    const idle = idleClip ? mixer.clipAction(idleClip) : null;
 
-    if (idle) idle.play();
-
-    if (wave && !reduce && idle) {
-      wave.setLoop(THREE.LoopOnce, 1);
-      wave.clampWhenFinished = true;
-      idle.setEffectiveWeight(0);
-      wave.reset().play();
-      mixer.addEventListener("finished", (ev) => {
-        if (ev.action === wave) {
-          idle.setEffectiveWeight(1);
-          idle.reset().play();
-          wave.fadeOut(0.5);
-        }
-      });
-    } else if (wave && !idle) {
+    // Melambai terus-terusan (genit) -> loop animasi Goodbye. Idle cuma fallback.
+    if (wave) {
+      wave.setLoop(THREE.LoopRepeat, Infinity);
+      wave.clampWhenFinished = false;
       wave.play();
+    } else if (idle) {
+      idle.play();
     }
 
     if (reduce) { mixer.update(0); vrm.update(0); renderOnce(); }
@@ -214,8 +203,8 @@ function frame(now) {
     if (mixer) mixer.update(dt);
     const em = vrm.expressionManager;
     if (em) {
-      em.setValue("happy", 0.55);
-      em.setValue("relaxed", 0.12);
+      em.setValue("happy", 0.3);   // senyum tipis
+      em.setValue("relaxed", 0.1);
       nextBlink -= dt;
       if (nextBlink <= 0) { blinkVal = 1; nextBlink = 2.4 + Math.random() * 3.2; winkMode = Math.random() < 0.4; }
       blinkVal += (0 - blinkVal) * Math.min(1, dt * 11);
