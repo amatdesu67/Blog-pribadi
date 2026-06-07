@@ -1,13 +1,13 @@
 /* =====================================================================
    hero3d.js — Latar 3D sinematik (Three.js r170 + three-vrm v3, ES module)
    - Starfield partikel emas (parallax mouse + scroll).
-   - Karakter VRM 1.0 (Chizuru.min.vrm): MELAMBAI terus (loop Goodbye.vrma),
-     ekspresi senyum tipis + kedip/wink.
+   - Karakter VRM 1.0 (Chizuru.min.vrm): MELAMBAI satu tangan (loop Goodbye,
+     lengan kiri dipaksa turun), ekspresi senyum tipis + kedip/wink.
    - Loader % saat model dimuat. Lazy-load. Reduced-motion: render diam.
    ===================================================================== */
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
+import { VRMLoaderPlugin, VRMUtils, VRMHumanBoneName } from "@pixiv/three-vrm";
 import {
   VRMAnimationLoaderPlugin,
   VRMLookAtQuaternionProxy,
@@ -25,8 +25,11 @@ const VRM_URL  = "/Chizuru.min.vrm";
 const IDLE_URL = "/vrma/Relax.vrma";
 const WAVE_URL = "/vrma/Goodbye.vrma";
 
+const SMILE = 0.15; // senyum tipis (naikin kalau mau lebih lebar; 0 = datar)
+
 let renderer, scene, camera, particles, raf = 0;
 let vrm = null, mixer = null, entrance = 0;
+let lUpperArm = null, lLowerArm = null, lHand = null;
 const clock = new THREE.Clock();
 const mouse = { x: 0, y: 0 }, target = { x: 0, y: 0 };
 let scrollY = window.scrollY || 0;
@@ -131,6 +134,14 @@ async function loadCharacter() {
     } catch (e) {}
     vrm.scene.traverse((o) => { if (o.isMesh) o.frustumCulled = false; });
 
+    // Bone lengan kiri -> dipaksa turun di tiap frame (biar lambai cuma tangan kanan).
+    try {
+      const HB = VRMHumanBoneName;
+      lUpperArm = vrm.humanoid.getNormalizedBoneNode(HB.LeftUpperArm);
+      lLowerArm = vrm.humanoid.getNormalizedBoneNode(HB.LeftLowerArm);
+      lHand = vrm.humanoid.getNormalizedBoneNode(HB.LeftHand);
+    } catch (e) {}
+
     const bp = basePos();
     vrm.scene.position.set(bp.x, bp.y, 0);
     vrm.scene.scale.setScalar(bp.s);
@@ -148,7 +159,6 @@ async function loadCharacter() {
     const wave = waveClip ? mixer.clipAction(waveClip) : null;
     const idle = idleClip ? mixer.clipAction(idleClip) : null;
 
-    // Melambai terus-terusan (genit) -> loop animasi Goodbye. Idle cuma fallback.
     if (wave) {
       wave.setLoop(THREE.LoopRepeat, Infinity);
       wave.clampWhenFinished = false;
@@ -157,11 +167,18 @@ async function loadCharacter() {
       idle.play();
     }
 
-    if (reduce) { mixer.update(0); vrm.update(0); renderOnce(); }
+    if (reduce) { mixer.update(0); applyLeftArmDown(); vrm.update(0); renderOnce(); }
   } catch (err) {
     console.error("Gagal memuat VRM/animasi:", err);
     hideLoader();
   }
+}
+
+function applyLeftArmDown() {
+  // Override pose lengan kiri ke posisi turun (A-pose) sesudah mixer.
+  if (lUpperArm) lUpperArm.rotation.set(0.1, 0.15, -1.35);
+  if (lLowerArm) lLowerArm.rotation.set(0, 0, -0.1);
+  if (lHand) lHand.rotation.set(0, 0, 0);
 }
 
 function loadClip(loader, url) {
@@ -201,16 +218,18 @@ function frame(now) {
 
   if (vrm) {
     if (mixer) mixer.update(dt);
+    applyLeftArmDown(); // override sesudah mixer, sebelum vrm.update
+
     const em = vrm.expressionManager;
     if (em) {
-      em.setValue("happy", 0.3);   // senyum tipis
-      em.setValue("relaxed", 0.1);
+      em.setValue("happy", SMILE);   // senyum tipis
       nextBlink -= dt;
       if (nextBlink <= 0) { blinkVal = 1; nextBlink = 2.4 + Math.random() * 3.2; winkMode = Math.random() < 0.4; }
       blinkVal += (0 - blinkVal) * Math.min(1, dt * 11);
       if (winkMode) { em.setValue("blinkLeft", blinkVal); em.setValue("blink", 0); }
       else { em.setValue("blink", blinkVal); em.setValue("blinkLeft", 0); }
     }
+
     entrance += (1 - entrance) * Math.min(1, dt * 2.2);
     const bp = basePos();
     const fade = Math.max(0, 1 - scrollY / (window.innerHeight * 0.85));
