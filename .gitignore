@@ -14,3 +14,4 @@ npm-debug.log*
 
 # Pengaturan lokal Claude Code
 .claude/settings.local.json
+client_errors.log

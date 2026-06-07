@@ -1,6 +1,34 @@
 <!DOCTYPE html>
 <html lang="id" data-theme="dark">
 <head>
+  <script>
+    window.addEventListener('error', function(e) {
+      fetch('/client-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'error',
+          message: e.message,
+          source: e.filename,
+          line: e.lineno,
+          column: e.colno,
+          error: e.error ? e.error.stack : null
+        })
+      });
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      fetch('/client-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'unhandledrejection',
+          message: e.reason ? e.reason.message : 'Unknown rejection',
+          reason: String(e.reason),
+          error: e.reason && e.reason.stack ? e.reason.stack : null
+        })
+      });
+    });
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <%
@@ -55,6 +83,19 @@
         }
       } catch (e) {}
     })();
+  </script>
+
+  <!-- Import map untuk Three.js r170 + three-vrm v3 + three-vrm-animation (ES modules).
+       Dipakai oleh /js/hero3d.js (type=module) untuk render karakter + animasi VRMA. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+      "@pixiv/three-vrm": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@3.1.3/lib/three-vrm.module.min.js",
+      "@pixiv/three-vrm-animation": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm-animation@3.1.2/lib/three-vrm-animation.module.min.js"
+    }
+  }
   </script>
 </head>
 <body>

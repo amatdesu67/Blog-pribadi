@@ -19,12 +19,11 @@
       </div>
     </div>
 
-    <!-- Panggung visual: medali monogram kaca; kristal 3D melayang di belakang
-         (dirender oleh #bg3d global). -->
+    <!-- Karakter VRM dirender oleh #bg3d global; loader tampil sampai model siap. -->
     <div class="hero-art" aria-hidden="true">
-      <div class="hero-orb">
-        <span class="hero-orb-mono">R</span>
-        <span class="hero-orb-tag">Est. 2026</span>
+      <div class="vrm-loading" id="vrmLoading">
+        <span class="vrm-spinner" aria-hidden="true"></span>
+        <span class="vrm-loading-text">Memuat karakter 3D <span id="vrmLoadingPct"></span></span>
       </div>
     </div>
   </section>

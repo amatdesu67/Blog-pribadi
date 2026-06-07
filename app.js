@@ -30,6 +30,25 @@ app.use((req, res, next) => {
 
 app.use(express.static(path.join(__dirname, "public"))); // file statis (css, js)
 app.use(express.urlencoded({ extended: false })); // membaca data form (req.body)
+app.use(express.json()); // membaca data JSON
+
+const fs = require("fs");
+
+app.post("/client-log", (req, res) => {
+  try {
+    const logData = {
+      timestamp: new Date().toISOString(),
+      ...req.body
+    };
+    fs.appendFileSync(
+      path.join(__dirname, "client_errors.log"),
+      JSON.stringify(logData, null, 2) + "\n\n"
+    );
+  } catch (err) {
+    console.error("Error writing to client_errors.log:", err);
+  }
+  res.sendStatus(200);
+});
 
 // Siapkan database sekali saat aplikasi dimuat (bikin tabel + seed).
 // CATATAN: kalau init GAGAL (mis. kredensial Turso salah), situs TIDAK mati
