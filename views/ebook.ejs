@@ -2,28 +2,28 @@
 <%- include('partials/header') %>
 
 <main class="container page">
-  <a href="/projects" class="back-link">← Projects</a>
+  <a href="/projects" class="back-link">&larr; Projects</a>
 
   <div class="ebook-cover">
     <p class="eyebrow">Panduan Berpikir Kritis</p>
     <h1><%= ebook.title %></h1>
     <p class="page-lead"><%= ebook.subtitle %></p>
-    <p class="muted"><%= ebook.edition %> · oleh <%= ebook.author %></p>
+    <p class="muted" style="margin-top: 1rem;"><%= ebook.edition %> &middot; oleh <%= ebook.author %></p>
   </div>
 
-  <h2 class="toc-title">Daftar Isi</h2>
+  <h2 class="toc-title section-label">~/daftar-isi</h2>
   <ol class="toc">
     <% chapters.forEach(function (c) { %>
       <li>
         <a href="/ebook/<%= c.slug %>">
-          <span class="toc-num"><%= c.number %></span>
+          <span class="toc-num"><%= String(c.number).padStart(2, "0") %></span>
           <span class="toc-text"><%= c.title %></span>
         </a>
       </li>
     <% }) %>
   </ol>
 
-  <a class="btn btn-primary" href="/ebook/<%= chapters[0].slug %>">Mulai baca dari Bab 1 →</a>
+  <a class="btn btn-primary" href="/ebook/<%= chapters[0].slug %>" style="margin-top: 1.5rem;">Mulai baca dari Bab 1</a>
 </main>
 
 <%- include('partials/footer') %>

@@ -2,11 +2,13 @@
 <%- include('partials/header') %>
 
 <main class="container page">
-  <a href="/projects" class="back-link">← Semua projects</a>
+  <a href="/projects" class="back-link">&larr; Semua proyek</a>
 
-  <span class="badge"><%= project.type %> · <%= project.year %></span>
-  <h1><%= project.title %></h1>
-  <p class="page-lead"><%= project.tagline %></p>
+  <div class="page-hero" style="padding-top: 0;">
+    <span class="badge"><%= project.type %> &middot; <%= project.year %></span>
+    <h1><%= project.title %></h1>
+    <p class="page-lead"><%= project.tagline %></p>
+  </div>
 
   <div class="prose"><%- descriptionHtml %></div>
 
@@ -16,12 +18,11 @@
 
   <div class="project-actions">
     <% if (project.internal) { %>
-      <!-- Proyek internal (ebook): dibaca langsung di situs ini -->
-      <a class="btn btn-primary" href="<%= project.url %>">Baca online →</a>
+      <a class="btn btn-primary" href="<%= project.url %>">Baca online</a>
     <% } else { %>
-      <!-- Proyek eksternal: buka demo/website di tab baru -->
-      <a class="btn btn-primary" href="<%= project.url %>" target="_blank" rel="noopener">Kunjungi demo →</a>
+      <a class="btn btn-primary" href="<%= project.url %>" target="_blank" rel="noopener">Kunjungi demo</a>
     <% } %>
+    <a class="btn btn-ghost" href="/contact">Mau dibikinin yang mirip?</a>
   </div>
 </main>
 

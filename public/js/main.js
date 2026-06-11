@@ -213,3 +213,61 @@
   // Refresh setelah semua aset (font/gambar) siap — ukuran track akurat.
   window.addEventListener("load", function () { ScrollTrigger.refresh(); });
 })();
+
+/* ---------- Fitur halaman dalam (ringan, tanpa dependensi) ---------- */
+(function () {
+  "use strict";
+
+  // Jam lokal di footer (WIB)
+  var clock = document.getElementById("footerClock");
+  if (clock) {
+    var tick = function () {
+      clock.textContent = new Date().toLocaleTimeString("id-ID", {
+        hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta"
+      }).replace(".", ":") + " WIB — Indonesia";
+    };
+    tick();
+    setInterval(tick, 30000);
+  }
+
+  // Reading progress (artikel & bab ebook)
+  var bar = document.getElementById("readProgress");
+  var prose = document.querySelector(".prose");
+  if (bar && prose) {
+    var onScroll = function () {
+      var r = prose.getBoundingClientRect();
+      var total = r.height - window.innerHeight;
+      var p = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 1;
+      bar.style.transform = "scaleX(" + p + ")";
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  }
+
+  // Filter projects
+  var filterWrap = document.querySelector("[data-proj-filter]");
+  if (filterWrap) {
+    var rows = document.querySelectorAll("[data-type]");
+    filterWrap.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-filter]");
+      if (!btn) return;
+      filterWrap.querySelectorAll(".tag").forEach(function (b) {
+        b.classList.toggle("is-active", b === btn);
+      });
+      var f = btn.getAttribute("data-filter");
+      rows.forEach(function (r) {
+        r.classList.toggle("is-hidden", f !== "all" && r.getAttribute("data-type") !== f);
+      });
+    });
+  }
+
+  // Kontak: kirim isi form via WhatsApp
+  var waBtn = document.getElementById("btnWhatsapp");
+  if (waBtn) {
+    waBtn.addEventListener("click", function () {
+      var g = function (n) { var el = document.querySelector('[name="' + n + '"]'); return el ? el.value.trim() : ""; };
+      var text = "Halo Riza! Aku " + (g("name") || "...") + ".\n" + (g("message") || "");
+      window.open("https://wa.me/6283842570278?text=" + encodeURIComponent(text), "_blank", "noopener");
+    });
+  }
+})();

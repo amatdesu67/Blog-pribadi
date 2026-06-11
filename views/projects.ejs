@@ -2,26 +2,27 @@
 <%- include('partials/header') %>
 
 <main class="container page">
-  <h1>Projects</h1>
-  <p class="page-lead">Proyek-proyek yang sudah kubuat sambil belajar.</p>
+  <div class="page-hero">
+    <p class="section-label">~/proyek</p>
+    <h1>Dibuat sambil belajar.</h1>
+    <p class="page-lead">Tiap proyek = satu pelajaran baru. Semuanya bisa dicoba langsung.</p>
+  </div>
 
-  <!-- Tag Filter Kategori -->
-  <div class="tag-row tag-filter" style="margin-bottom: 24px;">
+  <div class="tag-row tag-filter" data-proj-filter>
     <button class="tag is-active" data-filter="all">Semua</button>
     <button class="tag" data-filter="Web App">Web App</button>
     <button class="tag" data-filter="Ebook">Ebook</button>
   </div>
 
-  <div class="card-grid">
-    <% projects.forEach(function (p) { %>
-      <a class="card project-card" href="/projects/<%= p.slug %>" data-type="<%= p.type %>" style="transition: opacity 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);">
-        <span class="badge"><%= p.type %></span>
-        <h3><%= p.title %></h3>
-        <p class="muted"><%= p.tagline %></p>
-        <p><%= p.summary %></p>
-        <div class="tag-row">
-          <% p.tags.forEach(function (t) { %><span class="tag"><%= t %></span><% }) %>
+  <div class="proj-index">
+    <% projects.forEach(function (p, i) { %>
+      <a class="proj-row" href="/projects/<%= p.slug %>" data-type="<%= p.type %>">
+        <span class="page-num"><%= String(i + 1).padStart(2, "0") %></span>
+        <div>
+          <h3><%= p.title %></h3>
+          <p><%= p.tagline %></p>
         </div>
+        <span class="proj-type"><%= p.type %> &middot; <%= p.year %></span>
       </a>
     <% }) %>
   </div>

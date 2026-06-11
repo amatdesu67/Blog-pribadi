@@ -2,10 +2,12 @@
 <%- include('partials/header') %>
 
 <main class="container page">
-  <h1>Blog</h1>
-  <p class="page-lead">Catatan belajar, cerita proyek, dan pemikiran random.</p>
+  <div class="page-hero">
+    <p class="section-label">~/tulisan</p>
+    <h1>Catatan &amp; tulisan.</h1>
+    <p class="page-lead">Catatan belajar, cerita proyek, dan pemikiran random.</p>
+  </div>
 
-  <!-- Filter tag -->
   <div class="tag-row tag-filter">
     <a href="/blog" class="tag <%= activeTag ? '' : 'is-active' %>">Semua</a>
     <% tags.forEach(function (t) { %>
@@ -20,13 +22,16 @@
     <p class="muted">Belum ada tulisan untuk filter ini.</p>
   <% } else { %>
     <div class="article-list">
-      <% articles.forEach(function (a) { %>
+      <% articles.forEach(function (a, i) { %>
         <a class="article-item" href="/blog/<%= a.slug %>">
-          <time><%= formatTanggal(a.created_at) %></time>
-          <h3><%= a.title %></h3>
-          <p><%= a.excerpt %></p>
-          <div class="tag-row">
-            <% a.tags.forEach(function (t) { %><span class="tag tag-sm">#<%= t %></span><% }) %>
+          <span class="page-num"><%= String(i + 1).padStart(2, "0") %></span>
+          <div>
+            <time><%= formatTanggal(a.created_at) %></time>
+            <h3><%= a.title %></h3>
+            <p><%= a.excerpt %></p>
+            <div class="tag-row">
+              <% a.tags.forEach(function (t) { %><span class="tag tag-sm">#<%= t %></span><% }) %>
+            </div>
           </div>
         </a>
       <% }) %>

@@ -1,8 +1,10 @@
 <%- include('partials/head') %>
 <%- include('partials/header') %>
 
+<div class="read-progress" id="readProgress" aria-hidden="true"></div>
+
 <main class="container page article-page">
-  <a href="/blog" class="back-link">← Semua tulisan</a>
+  <a href="/blog" class="back-link">&larr; Semua tulisan</a>
 
   <article>
     <header class="article-header">
@@ -15,7 +17,6 @@
       </div>
     </header>
 
-    <!-- Isi artikel (sudah diubah dari Markdown ke HTML) -->
     <div class="prose"><%- contentHtml %></div>
   </article>
 </main>

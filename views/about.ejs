@@ -3,116 +3,109 @@
 
 <main class="container page about-page">
 
-  <!-- ===== Kartu profil ===== -->
-  <section class="profile-card">
-    <div class="profile-photo">
-      <img src="/img/profile.jpg" alt="Foto Ahmad Riza Rudi" onerror="this.remove()" />
-      <span class="profile-fallback">R</span>
+  <!-- Kartu profil gaya neofetch (akar TKJ) -->
+  <aside class="profile-card fetch-card">
+    <img src="/img/profile.jpg" alt="Foto Ahmad Riza Rudi" class="profile-photo" onerror="this.remove()" />
+    <p class="fetch-head">riza@web ~ $ <b>whoami</b></p>
+    <div class="fetch-row"><span class="fetch-key">nama</span><span class="fetch-sep">:</span><span>Ahmad Riza Rudi</span></div>
+    <div class="fetch-row"><span class="fetch-key">umur</span><span class="fetch-sep">:</span><span>18 tahun</span></div>
+    <div class="fetch-row"><span class="fetch-key">sekolah</span><span class="fetch-sep">:</span><span>SMK — TKJ</span></div>
+    <div class="fetch-row"><span class="fetch-key">role</span><span class="fetch-sep">:</span><span>Web dev &amp; penulis</span></div>
+    <div class="fetch-row"><span class="fetch-key">lokasi</span><span class="fetch-sep">:</span><span>Indonesia</span></div>
+    <div class="fetch-row"><span class="fetch-key">status</span><span class="fetch-sep">:</span><span>open utk magang/project</span></div>
+    <div class="profile-links">
+      <a class="btn btn-primary" href="/contact">Hubungi Gw</a>
+      <a class="btn btn-ghost" href="<%= social.instagram.url %>" target="_blank" rel="noopener">Instagram</a>
     </div>
-    <div class="profile-info">
-      <p class="eyebrow">Tentang Aku</p>
-      <h1>Ahmad Riza Rudi</h1>
-      <p class="profile-role">Web Developer (pemula) &amp; Penulis · Siswa SMK TKJ</p>
-      <p class="profile-meta">📍 Indonesia · 🎂 18 tahun · 💼 Terbuka untuk magang &amp; project</p>
-      <div class="profile-links">
-        <a class="btn btn-primary" href="/contact">Hubungi Aku</a>
-        <a class="btn btn-ghost" href="<%= social.instagram.url %>" target="_blank" rel="noopener">Instagram</a>
-        <!-- TODO: ganti # dengan link GitHub kamu -->
-        <a class="btn btn-ghost" href="#" target="_blank" rel="noopener">GitHub</a>
+  </aside>
+
+  <div>
+    <div class="page-hero" style="padding-top: 0;">
+      <p class="section-label">~/tentang-gw</p>
+      <h1>Belajar dengan cara bikin.</h1>
+    </div>
+
+    <section class="section-block">
+      <div class="prose">
+        <p>
+          Gw <strong>Ahmad Riza Rudi</strong> — siswa SMK jurusan
+          <strong>Teknik Komputer dan Jaringan</strong>. Selain ngulik jaringan,
+          gw jatuh cinta sama dunia pemrograman web: bikin sesuatu dari nol lalu
+          melihatnya jalan itu nagih.
+        </p>
+        <p>
+          Gw suka stack yang sederhana tapi nyata — yang bisa gw pahami dari ujung
+          ke ujung, bukan ikut-ikutan. Selain ngoding, gw juga menulis; buku gw
+          <em>"Otak yang Mudah Dibodohi"</em> bisa dibaca di
+          <a href="/ebook">halaman Ebook</a>.
+        </p>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ===== Statistik singkat ===== -->
-  <section class="stat-row">
-    <div class="stat"><strong>4</strong><span>Proyek</span></div>
-    <div class="stat"><strong>3+</strong><span>Tulisan</span></div>
-    <div class="stat"><strong>1</strong><span>Ebook</span></div>
-    <div class="stat"><strong>2026</strong><span>Mulai ngoding</span></div>
-  </section>
+    <section class="stat-row section-block">
+      <div class="stat"><strong>4</strong><span>Proyek</span></div>
+      <div class="stat"><strong>3+</strong><span>Tulisan</span></div>
+      <div class="stat"><strong>1</strong><span>Ebook</span></div>
+    </section>
 
-  <!-- ===== Perkenalan ===== -->
-  <section class="section-block">
-    <h2>Halo 👋</h2>
-    <div class="prose">
-      <p>
-        Aku <strong>Ahmad Riza Rudi</strong>, 18 tahun, siswa SMK jurusan
-        <strong>Teknik Komputer dan Jaringan (TKJ)</strong>. Selain ngulik jaringan,
-        aku jatuh cinta sama dunia pemrograman web — bikin sesuatu dari nol lalu
-        melihatnya jalan itu rasanya nagih.
-      </p>
-      <p>
-        Aku suka stack yang sederhana tapi nyata — yang bisa kupahami dari ujung
-        ke ujung, bukan cuma ikut-ikutan. Selain ngoding, aku juga menulis; bukuku
-        <em>"Otak yang Mudah Dibodohi"</em> bisa dibaca di
-        <a href="/ebook">halaman Ebook</a>.
-      </p>
-    </div>
-  </section>
+    <section class="section-block">
+      <h2>Yang gw kuasai</h2>
+      <div class="skill-list">
+        <% var skills = [
+          { name: 'HTML & CSS', level: 80 },
+          { name: 'JavaScript', level: 65 },
+          { name: 'Node.js & Express', level: 60 },
+          { name: 'SQLite / Database', level: 55 },
+          { name: 'Git & Deploy (Vercel)', level: 60 },
+          { name: 'Jaringan (TKJ)', level: 70 }
+        ]; %>
+        <% skills.forEach(function (s) { %>
+          <div class="skill">
+            <div class="skill-top"><span><%= s.name %></span><span class="skill-pct"><%= s.level %>%</span></div>
+            <div class="skill-bar"><span style="width: <%= s.level %>%"></span></div>
+          </div>
+        <% }) %>
+      </div>
+    </section>
 
-  <!-- ===== Skill ===== -->
-  <!-- TODO: sesuaikan level (angka) sesuai kemampuanmu sendiri -->
-  <section class="section-block">
-    <h2>Yang Kukuasai</h2>
-    <div class="skill-list">
-      <% var skills = [
-        { name: 'HTML & CSS', level: 80 },
-        { name: 'JavaScript', level: 65 },
-        { name: 'Node.js & Express', level: 60 },
-        { name: 'SQLite / Database', level: 55 },
-        { name: 'Git & Deploy (Vercel)', level: 60 },
-        { name: 'Jaringan (TKJ)', level: 70 }
-      ]; %>
-      <% skills.forEach(function (s) { %>
-        <div class="skill">
-          <div class="skill-top"><span><%= s.name %></span><span class="skill-pct"><%= s.level %>%</span></div>
-          <div class="skill-bar"><span style="width: <%= s.level %>%"></span></div>
-        </div>
-      <% }) %>
-    </div>
-  </section>
+    <section class="section-block">
+      <h2>Tools</h2>
+      <div class="tag-row">
+        <% ['HTML','CSS','JavaScript','Node.js','Express','EJS','SQLite','Turso','Git','GitHub','Vercel','VS Code'].forEach(function (t) { %>
+          <span class="tag"><%= t %></span>
+        <% }) %>
+      </div>
+    </section>
 
-  <!-- ===== Tools ===== -->
-  <section class="section-block">
-    <h2>Tools &amp; Teknologi</h2>
-    <div class="tag-row">
-      <% ['HTML','CSS','JavaScript','Node.js','Express','EJS','SQLite','Turso','Git','GitHub','Vercel','VS Code'].forEach(function (t) { %>
-        <span class="tag"><%= t %></span>
-      <% }) %>
-    </div>
-  </section>
+    <section class="section-block">
+      <h2>Perjalanan</h2>
+      <ol class="timeline">
+        <li class="timeline-item">
+          <span class="tl-year">2024</span>
+          <div><strong>Masuk SMK jurusan TKJ</strong><p>Mulai kenal dunia komputer &amp; jaringan lebih dalam.</p></div>
+        </li>
+        <li class="timeline-item">
+          <span class="tl-year">2025</span>
+          <div><strong>Mulai serius ngoding web</strong><p>HTML, CSS, JavaScript, lalu Node.js &amp; Express.</p></div>
+        </li>
+        <li class="timeline-item">
+          <span class="tl-year">2026</span>
+          <div><strong>Rilis ebook &amp; proyek pertama</strong><p>"Otak yang Mudah Dibodohi", Anto Computer, Pacar AI, Nalar, Cofus Coffee.</p></div>
+        </li>
+      </ol>
+    </section>
 
-  <!-- ===== Perjalanan ===== -->
-  <!-- TODO: betulin tahun & isi sesuai perjalananmu yang sebenarnya -->
-  <section class="section-block">
-    <h2>Perjalanan</h2>
-    <ol class="timeline">
-      <li class="timeline-item">
-        <span class="tl-year">2024</span>
-        <div><strong>Masuk SMK jurusan TKJ</strong><p>Mulai kenal dunia komputer &amp; jaringan lebih dalam.</p></div>
-      </li>
-      <li class="timeline-item">
-        <span class="tl-year">2025</span>
-        <div><strong>Mulai serius ngoding web</strong><p>Belajar HTML, CSS, JavaScript, lalu Node.js &amp; Express.</p></div>
-      </li>
-      <li class="timeline-item">
-        <span class="tl-year">2026</span>
-        <div><strong>Rilis ebook &amp; proyek pertama</strong><p>Menerbitkan "Otak yang Mudah Dibodohi", bikin Anto Computer, Pacar AI, dan Nalar.</p></div>
-      </li>
-    </ol>
-  </section>
-
-  <!-- ===== Tujuan ===== -->
-  <section class="section-block">
-    <h2>Tujuanku</h2>
-    <div class="prose">
-      <p>
-        Terus belajar, bikin proyek nyata, dan pelan-pelan jadi developer yang
-        kodenya rapi dan berguna buat orang lain. Blog ini jadi jejak perjalanan itu.
-      </p>
-    </div>
-    <a class="btn btn-primary" href="/contact" style="margin-top:18px;">Ngobrol yuk →</a>
-  </section>
+    <section class="section-block">
+      <h2>Tujuan</h2>
+      <div class="prose">
+        <p>
+          Terus belajar, bikin proyek nyata, dan pelan-pelan jadi developer yang
+          kodenya rapi dan berguna buat orang lain. Blog ini jejak perjalanannya.
+        </p>
+      </div>
+      <a class="btn btn-primary" href="/contact" style="margin-top:18px;">Ngobrol yuk</a>
+    </section>
+  </div>
 
 </main>
 

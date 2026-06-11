@@ -945,3 +945,166 @@ main:not(#main) { padding-top: 52px; } /* offset header fixed utk halaman lama *
   }
   .scroll-indicator-line::after { animation: none; }
 }
+
+/* =====================================================================
+   LAYER 2 — IDENTITAS "TERMINAL HERITAGE"
+   Mono accents (akar TKJ) + grain + satu gradient khas. Tetap restraint.
+   ===================================================================== */
+:root {
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --aurora: linear-gradient(100deg, #2997ff 0%, #7b61ff 55%, #bf5af2 100%);
+}
+
+/* Grain halus di atas semua — tekstur, anti-steril */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+
+/* Aksen mono di metadata — bukan di body text */
+.section-label, .eyebrow, .tag, .tag-sm, .badge, .proj-num, .proj-type,
+.toc-num, .tl-year, .article-card time, .article-item time, .skill-pct,
+.scroll-indicator-label, .footer-bottom, .price-num, .stat strong,
+.hero-eyebrow, .page-num {
+  font-family: var(--mono);
+  letter-spacing: 0;
+}
+.section-label::before { content: "$ "; color: var(--muted-2); }
+
+/* Prompt + caret kedip di hero */
+.hero-eyebrow { text-transform: none; letter-spacing: 0; }
+.hero-eyebrow .prompt { color: var(--fg); }
+.caret {
+  display: inline-block;
+  width: 0.55em; height: 1.05em;
+  background: var(--fg);
+  vertical-align: text-bottom;
+  animation: blink 1.1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Gradient khas — dipakai hemat */
+.hero-title em, .grad {
+  background: var(--aurora);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.big-404 { background: var(--aurora); -webkit-background-clip: text; background-clip: text; }
+
+/* ---------- Page hero (halaman dalam) ---------- */
+.page-hero { padding: clamp(2.5rem, 7vh, 5rem) 0 clamp(2rem, 5vh, 3.5rem); }
+.page-hero h1 {
+  font-size: clamp(2.6rem, 6vw, 4.5rem);
+  letter-spacing: -0.03em;
+  margin: 0.5rem 0 1rem;
+}
+.page-hero .page-lead { font-size: clamp(1.05rem, 1.6vw, 1.3rem); }
+
+/* ---------- Blog: index editorial bernomor ---------- */
+.article-item { display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: baseline; }
+.page-num { color: var(--muted-2); font-size: 0.9rem; min-width: 2.2em; }
+.article-item h3 {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  transition: color 0.3s var(--ease);
+}
+.article-item:hover h3 { color: var(--muted); }
+.article-item .tag-row { margin-top: 0.6rem; }
+
+/* ---------- Artikel: reading progress ---------- */
+.read-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--aurora);
+  transform-origin: left center;
+  transform: scaleX(0);
+  z-index: 200;
+}
+
+/* ---------- About: kartu neofetch ---------- */
+.fetch-card {
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  line-height: 1.9;
+}
+.fetch-head { color: var(--muted); margin-bottom: 0.75rem; }
+.fetch-head b { color: var(--fg); font-weight: 500; }
+.fetch-row { display: flex; gap: 1rem; }
+.fetch-key { color: #7b61ff; min-width: 7.5em; }
+.fetch-sep { color: var(--muted-2); }
+.fetch-card .profile-photo { border-radius: 14px; width: 100%; height: auto; aspect-ratio: 1; margin: 0 0 1.25rem; }
+
+/* ---------- Projects index ---------- */
+.proj-index { display: flex; flex-direction: column; }
+.proj-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  align-items: baseline;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--line);
+  transition: padding-left 0.4s var(--ease);
+}
+.proj-row:hover { padding-left: 0.75rem; }
+.proj-row h3 { font-size: clamp(1.6rem, 3.5vw, 2.6rem); }
+.proj-row p { color: var(--muted); margin-top: 0.4rem; max-width: 38em; }
+.proj-row .proj-type { color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
+.proj-row.is-hidden { display: none; }
+
+.tag-filter .tag { cursor: pointer; }
+
+/* ---------- Ebook: cover tilt ---------- */
+.ebook-cover {
+  position: relative;
+  background:
+    radial-gradient(120% 160% at 85% -20%, rgba(123, 97, 255, 0.16) 0%, transparent 55%),
+    linear-gradient(145deg, #1a1a1e 0%, #101013 70%);
+  transform-style: preserve-3d;
+  transition: transform 0.6s var(--ease);
+}
+@media (hover: hover) {
+  .ebook-cover:hover { transform: perspective(900px) rotateX(2.5deg) rotateY(-3deg); }
+}
+.ebook-cover h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); }
+
+/* ---------- Footer: jam lokal ---------- */
+.footer-clock { font-family: var(--mono); color: var(--muted-2); font-size: 0.8rem; }
+
+/* ---------- 404 shell ---------- */
+.shell-404 {
+  font-family: var(--mono);
+  color: var(--muted);
+  font-size: 0.95rem;
+  max-width: 32em;
+  margin: 1.25rem auto 2rem;
+  text-align: left;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  line-height: 2;
+}
+.shell-404 b { color: var(--fg); font-weight: 500; }
+
+@media (max-width: 768px) {
+  .article-item { grid-template-columns: 1fr; gap: 0.25rem; }
+  .proj-row { grid-template-columns: 1fr; gap: 0.4rem; }
+  .fetch-row { flex-direction: column; gap: 0; }
+}
+
+/* fix kecil layer 2 */
+.fetch-card { text-align: left; }
+h2.toc-title { display: block; border-bottom: none; padding: 0; margin-top: 2.5rem; }
+.contact-page-wrap .contact-page { margin-top: 1rem; }
