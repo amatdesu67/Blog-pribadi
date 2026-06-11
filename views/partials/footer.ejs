@@ -1,23 +1,24 @@
 <footer class="site-footer">
-  <div class="container footer-inner">
-    <div>
-      <p>© <%= year %> <strong>Ahmad Riza Rudi</strong></p>
-      <p class="footer-made">Dibuat dengan Node.js + Express + EJS</p>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <p class="footer-brand">Ahmad Riza Rudi</p>
+      <nav class="footer-links" aria-label="Media sosial">
+        <a class="u-line" href="<%= social.whatsapp.url %>" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="u-line" href="<%= social.instagram.url %>" target="_blank" rel="noopener">Instagram</a>
+        <a class="u-line" href="<%= social.tiktok.url %>" target="_blank" rel="noopener">TikTok</a>
+        <a class="u-line" href="mailto:<%= social.email %>">Email</a>
+      </nav>
     </div>
-    <nav class="footer-links">
-      <a href="<%= social.whatsapp.url %>" target="_blank" rel="noopener">WhatsApp</a>
-      <a href="<%= social.instagram.url %>" target="_blank" rel="noopener">Instagram</a>
-      <a href="<%= social.tiktok.url %>" target="_blank" rel="noopener">TikTok</a>
-      <a href="mailto:<%= social.email %>">Email</a>
-    </nav>
+    <div class="footer-bottom">
+      <p>© <%= year %> Ahmad Riza Rudi</p>
+      <p>Node.js · Express · EJS</p>
+    </div>
   </div>
 </footer>
 
-<!-- Three.js dulu (global THREE) -> GLTFLoader -> three-vrm (VRM 1.0) -> scene 3D -> UI.
-     Versi DISELARASKAN: three r137 + GLTFLoader r137 + three-vrm v1 (dukung VRM 1.0 / Chizuru.vrm).
-     Urutan classic-script ini penting agar hero3d.js melihat THREE & THREE_VRM. -->
-<!-- Scene 3D (karakter VRM + animasi VRMA) sebagai ES module; lihat import map di <head>. -->
+<% if (typeof active !== "undefined" && active === "home") { %>
 <script type="module" src="/js/hero3d.js"></script>
-<script src="/js/main.js"></script>
+<% } %>
+<script defer src="/js/main.js"></script>
 </body>
 </html>

@@ -1,109 +1,122 @@
 <%- include('partials/head') %>
 <%- include('partials/header') %>
 
-<main>
-  <!-- ===== HERO ===== -->
-  <section class="hero container">
-    <div class="hero-text">
-      <span class="status-pill"><span class="status-dot"></span> Terbuka untuk project &amp; magang</span>
-      <p class="eyebrow">Halo, aku</p>
-      <h1 data-typing>Ahmad Riza Rudi</h1>
-      <p class="hero-lead">
-        Web developer &amp; penulis — siswa SMK TKJ, 18 tahun. Aku membangun
-        website yang rapi, cepat, dan beneran jalan dengan Node.js, Express &amp;
-        SQLite. Ini ruang tempatku menaruh karya dan catatan belajar.
+<main id="main">
+
+  <!-- ===== 1. HERO ===== -->
+  <section class="hero" id="hero">
+    <canvas id="hero3d" aria-hidden="true"></canvas>
+    <div class="hero-content">
+      <p class="hero-eyebrow" data-hero-fade>Ahmad Riza Rudi</p>
+      <h1 class="hero-title">
+        <span class="hero-line"><span data-hero-line>Bikin web yang</span></span>
+        <span class="hero-line"><span data-hero-line>rapi. Cepat.</span></span>
+        <span class="hero-line"><span data-hero-line><em>Beneran jalan.</em></span></span>
+      </h1>
+      <p class="hero-sub" data-hero-fade>
+        Web developer &amp; penulis. Node.js, Express, dan hal-hal
+        yang kupelajari di sepanjang jalan.
       </p>
-      <div class="hero-actions">
+      <div class="hero-actions" data-hero-fade>
         <a class="btn btn-primary" href="/projects">Lihat Karya</a>
-        <a class="btn btn-ghost" href="/contact">Hubungi Aku</a>
+        <a class="btn btn-ghost" href="/contact">Hubungi Gw</a>
       </div>
     </div>
+    <div class="scroll-indicator" data-hero-fade aria-hidden="true">
+      <span class="scroll-indicator-label">Scroll</span>
+      <span class="scroll-indicator-line"></span>
+    </div>
+  </section>
 
-    <!-- Karakter VRM dirender oleh #bg3d global; loader tampil sampai model siap. -->
-    <div class="hero-art" aria-hidden="true">
-      <div class="vrm-loading" id="vrmLoading">
-        <span class="vrm-spinner" aria-hidden="true"></span>
-        <span class="vrm-loading-text">Memuat karakter 3D <span id="vrmLoadingPct"></span></span>
+  <!-- ===== 2. TENTANG GW ===== -->
+  <section class="about" id="about">
+    <div class="about-inner">
+      <div class="about-text">
+        <p class="section-label">Tentang Gw</p>
+        <p class="about-reveal" data-word-reveal>
+          Umur 18, anak SMK TKJ. Gw membangun website dari nol &mdash;
+          server, database, sampai animasi &mdash; dan menulis tentang
+          berpikir kritis di era yang berisik. Buat gw, kode yang baik
+          itu seperti tulisan yang baik: jelas, jujur, tanpa basa-basi.
+        </p>
+        <a class="link-more u-line" href="/about">Kenalan lebih jauh</a>
+      </div>
+      <div class="about-photo-wrap">
+        <img
+          src="/img/profile.jpg"
+          alt="Foto Ahmad Riza Rudi"
+          class="about-photo"
+          data-parallax
+          loading="lazy"
+          decoding="async" />
       </div>
     </div>
   </section>
 
-  <!-- PROYEK UNGGULAN -->
-  <section class="container section">
-    <div class="section-head">
-      <h2>Proyek Unggulan</h2>
-      <a href="/projects" class="link-more">Semua proyek →</a>
+  <!-- ===== 3. PROYEK UNGGULAN (horizontal scroll) ===== -->
+  <section class="projects-h" id="projects">
+    <div class="projects-h-head">
+      <p class="section-label">Proyek Unggulan</p>
+      <h2 class="section-title">Karya pilihan.</h2>
     </div>
-    <div class="card-grid">
-      <% projects.forEach(function (p) { %>
-        <a class="card project-card" href="/projects/<%= p.slug %>">
-          <span class="badge"><%= p.type %></span>
-          <h3><%= p.title %></h3>
-          <p><%= p.summary %></p>
-          <div class="tag-row">
-            <% p.tags.slice(0, 3).forEach(function (t) { %><span class="tag"><%= t %></span><% }) %>
-          </div>
-        </a>
+
+    <div class="proj-viewport" id="projViewport">
+      <div class="proj-track" id="projTrack">
+        <% projects.forEach(function (p, i) { %>
+          <a class="proj-card" href="/projects/<%= p.slug %>" data-index="<%= i %>">
+            <div class="proj-card-top">
+              <span class="proj-num"><%= String(i + 1).padStart(2, "0") %></span>
+              <span class="proj-type"><%= p.type %> &middot; <%= p.year %></span>
+            </div>
+            <div class="proj-card-body">
+              <h3><%= p.title %></h3>
+              <p><%= p.tagline %></p>
+            </div>
+            <div class="proj-card-tags">
+              <% p.tags.slice(0, 3).forEach(function (t) { %><span class="tag"><%= t %></span><% }) %>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    </div>
+
+    <div class="proj-progress" id="projProgress" role="presentation">
+      <% projects.forEach(function (p, i) { %>
+        <span class="proj-dot<%= i === 0 ? ' is-active' : '' %>"></span>
       <% }) %>
     </div>
+
+    <div class="projects-h-foot">
+      <a class="link-more u-line" href="/projects">Semua proyek</a>
+    </div>
   </section>
 
-  <!-- SOROTAN EBOOK -->
-  <section class="container section">
-    <div class="ebook-highlight">
-      <div>
-        <p class="eyebrow">Ebook karyaku</p>
-        <h2><%= ebook.title %></h2>
-        <p><%= ebook.subtitle %></p>
+  <!-- ===== 4. ARTIKEL TERBARU ===== -->
+  <section class="articles" id="articles">
+    <div class="articles-inner">
+      <div class="articles-head">
+        <p class="section-label">Artikel Terbaru</p>
+        <h2 class="section-title">Catatan &amp; tulisan.</h2>
       </div>
-      <a class="btn btn-primary" href="/ebook">Baca online →</a>
-    </div>
-  </section>
-
-  <!-- ARTIKEL TERBARU -->
-  <section class="container section">
-    <div class="section-head">
-      <h2>Tulisan Terbaru</h2>
-      <a href="/blog" class="link-more">Semua tulisan →</a>
-    </div>
-    <div class="article-list">
-      <% articles.forEach(function (a) { %>
-        <a class="article-item" href="/blog/<%= a.slug %>">
-          <time><%= formatTanggal(a.created_at) %></time>
-          <h3><%= a.title %></h3>
-          <p><%= a.excerpt %></p>
+      <div class="article-grid">
+        <% articles.forEach(function (a) { %>
+          <a class="article-card" href="/blog/<%= a.slug %>" data-article-card>
+            <time datetime="<%= a.created_at %>"><%= formatTanggal(a.created_at) %></time>
+            <h3><%= a.title %></h3>
+            <p><%= a.excerpt %></p>
+            <span class="article-card-cta u-line">Baca</span>
+          </a>
+        <% }) %>
+        <a class="article-card article-card-ebook" href="/ebook" data-article-card>
+          <time>Ebook</time>
+          <h3><%= ebook.title %></h3>
+          <p><%= ebook.subtitle %></p>
+          <span class="article-card-cta u-line">Baca online</span>
         </a>
-      <% }) %>
+      </div>
     </div>
   </section>
 
-  <!-- TERMINAL MINI INTERAKTIF (TKJ SPECIAL) -->
-  <section class="container section">
-    <div class="section-head">
-      <h2>TKJ Lab Terminal</h2>
-      <a class="link-more" href="/about">Profil Riza →</a>
-    </div>
-    <div class="terminal-container">
-      <div class="terminal-header">
-        <div class="terminal-buttons">
-          <span class="term-btn red"></span>
-          <span class="term-btn yellow"></span>
-          <span class="term-btn green"></span>
-        </div>
-        <div class="terminal-title">riza@tkj-lab:~</div>
-      </div>
-      <div class="terminal-body" id="terminalBody">
-        <div class="terminal-line">Selamat datang di TKJ Lab Terminal v1.0.0!</div>
-        <div class="terminal-line">Ketik <span class="term-highlight">help</span> untuk melihat daftar perintah yang tersedia.</div>
-        <br>
-        <div class="terminal-output" id="terminalOutput"></div>
-        <div class="terminal-input-row">
-          <span class="terminal-prompt">riza@tkj-lab:~$</span>
-          <input type="text" id="terminalInput" autocomplete="off" spellcheck="false" aria-label="Terminal Input">
-        </div>
-      </div>
-    </div>
-  </section>
 </main>
 
 <%- include('partials/footer') %>

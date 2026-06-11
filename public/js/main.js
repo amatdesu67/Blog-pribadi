@@ -1,318 +1,215 @@
 // public/js/main.js
-// Dua fungsi kecil di sisi browser: ganti tema gelap/terang, dan buka/tutup menu mobile.
+// Animasi global: Lenis smooth scroll + GSAP/ScrollTrigger.
+// Prinsip: restraint — satu fokus per section, durasi 0.8–1.2s, power3.out.
 
 (function () {
-  // --- Ganti tema ---
-  const themeToggle = document.getElementById("themeToggle");
-  if (themeToggle) {
-    themeToggle.addEventListener("click", function () {
-      const root = document.documentElement;
-      const current = root.getAttribute("data-theme") === "dark" ? "dark" : "light";
-      const next = current === "dark" ? "light" : "dark";
-      root.setAttribute("data-theme", next);
-      // Simpan pilihan supaya tetap sama saat halaman dibuka lagi.
-      try {
-        localStorage.setItem("theme", next);
-      } catch (e) {}
-    });
-  }
+  "use strict";
 
-  // --- Gambar hero melambai saat diklik / disentuh ---
-  // (Hover sudah ditangani CSS; ini biar di HP yang tanpa hover tetap bisa.)
-  const heroArt = document.querySelector(".hero-art");
-  if (heroArt) {
-    heroArt.addEventListener("click", function () {
-      heroArt.classList.add("is-waving");
-      clearTimeout(heroArt._waveTimer);
-      heroArt._waveTimer = setTimeout(function () {
-        heroArt.classList.remove("is-waving");
-      }, 1600);
-    });
-  }
+  var DUR = 1;
+  var EASE = "power3.out";
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // --- Menu mobile (hamburger) ---
-  const navToggle = document.getElementById("navToggle");
-  const nav = document.getElementById("nav");
+  /* ---------- Nav (semua halaman, tanpa dependensi GSAP) ---------- */
+  var header = document.getElementById("siteHeader");
+  var navToggle = document.getElementById("navToggle");
+  var nav = document.getElementById("nav");
+
   if (navToggle && nav) {
-    navToggle.addEventListener("click", function (e) {
-      e.stopPropagation();
-      const open = nav.classList.toggle("nav-open");
-      navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    navToggle.addEventListener("click", function () {
+      var open = nav.classList.toggle("is-open");
+      navToggle.setAttribute("aria-expanded", String(open));
     });
+  }
 
-    // Tutup menu otomatis jika pengguna mengetuk di luar area menu
-    document.addEventListener("click", function (e) {
-      if (nav.classList.contains("nav-open") && !nav.contains(e.target) && e.target !== navToggle) {
-        nav.classList.remove("nav-open");
-        navToggle.setAttribute("aria-expanded", "false");
+  function onScrollHeader() {
+    if (header) header.classList.toggle("is-scrolled", window.scrollY > 8);
+  }
+  window.addEventListener("scroll", onScrollHeader, { passive: true });
+  onScrollHeader();
+
+  // GSAP wajib ada untuk sisanya; kalau CDN gagal, situs tetap berfungsi.
+  if (typeof gsap === "undefined") return;
+  if (typeof ScrollTrigger !== "undefined") gsap.registerPlugin(ScrollTrigger);
+
+  /* ---------- Lenis smooth scroll (global) ---------- */
+  var lenis = null;
+  if (typeof Lenis !== "undefined" && !reduced) {
+    lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
+    gsap.ticker.lagSmoothing(0);
+  }
+
+  if (reduced) return; // konten tampil apa adanya, tanpa animasi
+
+  /* ================= HOMEPAGE ================= */
+  var isHome = document.body.classList.contains("is-home");
+
+  /* ---------- 1. Hero: stagger fade-up ---------- */
+  if (isHome) {
+    var heroTl = gsap.timeline({ defaults: { ease: EASE } });
+    heroTl
+      .from("[data-hero-line]", {
+        yPercent: 110,
+        duration: 1.2,
+        stagger: 0.12
+      })
+      .from("[data-hero-fade]", {
+        y: 24,
+        autoAlpha: 0,
+        duration: DUR,
+        stagger: 0.1
+      }, "-=0.7");
+
+    // Scroll indicator memudar saat mulai scroll
+    gsap.to(".scroll-indicator", {
+      autoAlpha: 0,
+      ease: "none",
+      scrollTrigger: {
+        trigger: "#hero",
+        start: "top top",
+        end: "18% top",
+        scrub: true
       }
     });
   }
 
-  // --- Terminal Mini Interaktif (TKJ Special) ---
-  const terminalInput = document.getElementById("terminalInput");
-  const terminalOutput = document.getElementById("terminalOutput");
-  const terminalBody = document.getElementById("terminalBody");
+  var mm = gsap.matchMedia();
 
-  if (terminalInput && terminalOutput && terminalBody) {
-    // Fokuskan input saat area terminal diklik
-    terminalBody.addEventListener("click", () => {
-      terminalInput.focus();
-    });
+  /* ---------- Desktop ---------- */
+  mm.add("(min-width: 769px)", function () {
+    if (!isHome) return;
 
-    const commands = {
-      help: () => `Perintah yang tersedia:<br>
-        - <span class="term-highlight">about</span> : Siapa Riza?<br>
-        - <span class="term-highlight">neofetch</span> : Info sistem & stack favorit.<br>
-        - <span class="term-highlight">ping riza</span> : Cek latensi ke pembuat web.<br>
-        - <span class="term-highlight">skill</span> : Lihat level keahlian.<br>
-        - <span class="term-highlight">clear</span> : Bersihkan layar terminal.`,
-      about: () => `Ahmad Riza Rudi - 18 Tahun, Siswa SMK TKJ.<br>
-        Sedang serius mempelajari Web Development (Node.js, Express, SQLite).<br>
-        Suka menulis buku berpikir kritis ("Otak yang Mudah Dibodohi").`,
-      neofetch: () => `
-        <span class="term-highlight">riza@tkj-lab</span><br>
-        -----------------<br>
-        OS: Android & Windows Dual-Boot (via WSL)<br>
-        Shell: Zsh / PowerShell<br>
-        Uptime: 24/7 learning<br>
-        Terminal: VS Code Terminal<br>
-        CPU: Brain Core i7-18th Gen<br>
-        Memory: Coffee-powered RAM<br>
-        Stack: Node.js, Express.js, EJS, SQLite, Git, Vercel
-      `,
-      skill: () => `
-        <span class="term-highlight">Keahlian TKJ & Web Dev:</span><br>
-        - HTML & CSS : [████████████████░░░░] 80%<br>
-        - Jaringan (TKJ) : [██████████████░░░░░░] 70%<br>
-        - JavaScript : [█████████████░░░░░░░░] 65%<br>
-        - Node.js & Express : [████████████░░░░░░░░░] 60%<br>
-        - SQLite & Turso : [███████████░░░░░░░░░░] 55%
-      `,
-      "ping riza": () => {
-        let replies = "";
-        for (let i = 0; i < 4; i++) {
-          replies += `Reply from 192.168.1.67: bytes=32 time=${Math.floor(Math.random() * 3) + 1}ms TTL=64<br>`;
-        }
-        return replies + `<span class="term-highlight">Ping statistics:</span> Packets: Sent = 4, Received = 4, Lost = 0 (0% loss).`;
-      },
-      clear: () => {
-        terminalOutput.innerHTML = "";
-        return "";
-      }
-    };
-
-    terminalInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        const inputVal = terminalInput.value.trim();
-        terminalInput.value = "";
-
-        if (inputVal === "") return;
-
-        // Tampilkan perintah lama ke output
-        const cmdRow = document.createElement("div");
-        cmdRow.className = "terminal-line";
-        cmdRow.innerHTML = `<span class="terminal-prompt">riza@tkj-lab:~$</span> <span class="term-command">${inputVal}</span>`;
-        terminalOutput.appendChild(cmdRow);
-
-        const lowerCmd = inputVal.toLowerCase();
-        let result = "";
-
-        if (commands[lowerCmd]) {
-          result = commands[lowerCmd]();
-        } else {
-          result = `<span class="term-error">Error: Command not found: "${inputVal}". Ketik 'help' untuk bantuan.</span>`;
-        }
-
-        if (lowerCmd !== "clear" && result !== "") {
-          const resultRow = document.createElement("div");
-          resultRow.className = "terminal-line";
-          resultRow.innerHTML = result;
-          terminalOutput.appendChild(resultRow);
-
-          // Beri baris kosong baru
-          const spacing = document.createElement("div");
-          spacing.innerHTML = "<br>";
-          terminalOutput.appendChild(spacing);
-        }
-
-        // Scroll otomatis ke bawah
-        terminalBody.scrollTop = terminalBody.scrollHeight;
-      }
-    });
-  }
-
-  // --- Filter Proyek (Client-side) ---
-  const filterButtons = document.querySelectorAll(".tag-filter button");
-  const projectCards = document.querySelectorAll(".project-card");
-
-  if (filterButtons.length > 0 && projectCards.length > 0) {
-    filterButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        // Hapus kelas is-active dari semua tombol filter
-        filterButtons.forEach(b => b.classList.remove("is-active"));
-        // Tambahkan kelas is-active ke tombol yang diklik
-        btn.classList.add("is-active");
-
-        const filterVal = btn.getAttribute("data-filter");
-
-        projectCards.forEach(card => {
-          const type = card.getAttribute("data-type");
-
-          if (filterVal === "all" || type === filterVal) {
-            card.style.display = "block";
-            setTimeout(() => {
-              card.style.opacity = "1";
-              // Kosongkan transform inline supaya efek hover-naik kartu tetap jalan.
-              card.style.transform = "";
-            }, 50);
-          } else {
-            card.style.opacity = "0";
-            card.style.transform = "translateY(12px) scale(0.96)";
-            setTimeout(() => {
-              card.style.display = "none";
-            }, 300);
+    /* 2. Tentang: reveal per kata (scrub) + foto parallax */
+    var aboutP = document.querySelector("[data-word-reveal]");
+    if (aboutP && !aboutP.dataset.split) {
+      aboutP.dataset.split = "1";
+      aboutP.innerHTML = aboutP.textContent.trim().split(/\s+/)
+        .map(function (w) { return '<span class="w">' + w + "</span>"; })
+        .join(" ");
+    }
+    if (aboutP) {
+      gsap.fromTo(aboutP.querySelectorAll(".w"),
+        { opacity: 0.15 },
+        {
+          opacity: 1,
+          ease: "none",
+          stagger: 0.06,
+          scrollTrigger: {
+            trigger: aboutP,
+            start: "top 75%",
+            end: "bottom 45%",
+            scrub: 0.5
           }
         });
-      });
-    });
-  }
+    }
 
-  // --- WhatsApp Message Generator (Contact Page) ---
-  const btnWhatsapp = document.getElementById("btnWhatsapp");
-  if (btnWhatsapp) {
-    btnWhatsapp.addEventListener("click", () => {
-      const nameInput = document.querySelector('input[name="name"]');
-      const emailInput = document.querySelector('input[name="email"]');
-      const messageInput = document.querySelector('textarea[name="message"]');
-
-      if (!nameInput.value.trim() || !messageInput.value.trim()) {
-        alert("Mohon isi Nama dan Pesan terlebih dahulu sebelum mengirim via WhatsApp.");
-        return;
-      }
-
-      const name = encodeURIComponent(nameInput.value.trim());
-      const email = encodeURIComponent(emailInput.value.trim() || "Tidak ada");
-      const message = encodeURIComponent(messageInput.value.trim());
-
-      const waText = `Halo Riza, nama saya *${name}* (${email}).%0A%0APesan:%0A${message}`;
-      const waUrl = `https://wa.me/6283842570278?text=${waText}`;
-
-      window.open(waUrl, "_blank");
-    });
-  }
-
-  // --- Transisi pindah halaman (fade-out sebelum navigasi) ---
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (!prefersReduced) {
-    document.addEventListener("click", function (e) {
-      const a = e.target.closest("a");
-      if (!a) return;
-      const href = a.getAttribute("href");
-      if (
-        !href ||
-        href.startsWith("#") ||
-        a.target === "_blank" ||
-        a.hasAttribute("download") ||
-        a.host !== window.location.host ||
-        e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0
-      ) return;
-
-      e.preventDefault();
-      document.body.classList.add("is-leaving");
-      setTimeout(function () {
-        window.location.href = href;
-      }, 200);
-    });
-  }
-  window.addEventListener("pageshow", function () {
-    document.body.classList.remove("is-leaving");
-  });
-
-  // --- Animasi Timeline Saat di-Scroll (About Page) ---
-  const timelineItems = document.querySelectorAll(".timeline-item");
-  if (timelineItems.length > 0) {
-    const observerOptions = { root: null, rootMargin: "0px", threshold: 0.15 };
-    const observer = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("active");
-          observer.unobserve(entry.target);
+    gsap.fromTo("[data-parallax]",
+      { yPercent: -10 },
+      {
+        yPercent: 2,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".about-photo-wrap",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true
         }
       });
-    }, observerOptions);
-    timelineItems.forEach(item => observer.observe(item));
-  }
 
-  // --- Reveal saat scroll (elegan) ---
-  if (document.documentElement.classList.contains("reveal-ready")) {
-    const main = document.querySelector("main");
-    if (main) {
-      const staggerEls = main.querySelectorAll(
-        ".card-grid, .article-list, .price-grid, .stat-row, .skill-list"
-      );
-      const blockEls = main.querySelectorAll(
-        ".section-head, .ebook-highlight, .cta-box, .profile-card, .terminal-container, .prose, .ebook-cover, .article-header"
-      );
-      staggerEls.forEach(el => el.classList.add("reveal-stagger"));
-      blockEls.forEach(el => el.classList.add("reveal"));
+    /* 3. Proyek: horizontal scroll + progress dots */
+    var track = document.getElementById("projTrack");
+    var dots = gsap.utils.toArray(".proj-dot");
+    if (track) {
+      var getDistance = function () {
+        return Math.max(0, track.scrollWidth - window.innerWidth);
+      };
+      gsap.to(track, {
+        x: function () { return -getDistance(); },
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".projects-h",
+          start: "top top",
+          end: function () { return "+=" + getDistance(); },
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onUpdate: function (self) {
+            if (!dots.length) return;
+            var idx = Math.round(self.progress * (dots.length - 1));
+            dots.forEach(function (d, i) {
+              d.classList.toggle("is-active", i === idx);
+            });
+          }
+        }
+      });
+    }
 
-      const allTargets = [...staggerEls, ...blockEls];
-      if ("IntersectionObserver" in window && allTargets.length) {
-        const obs = new IntersectionObserver((entries, o) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
-              o.unobserve(entry.target);
-            }
+    return function () {}; // cleanup dikelola matchMedia
+  });
+
+  /* ---------- Mobile: fade sederhana (tanpa scrub, tanpa pin) ---------- */
+  mm.add("(max-width: 768px)", function () {
+    if (!isHome) return;
+
+    [".about-text", ".about-photo-wrap", ".projects-h-head"].forEach(function (sel) {
+      var el = document.querySelector(sel);
+      if (!el) return;
+      gsap.from(el, {
+        y: 28,
+        autoAlpha: 0,
+        duration: DUR,
+        ease: EASE,
+        scrollTrigger: { trigger: el, start: "top 85%", once: true }
+      });
+    });
+  });
+
+  /* ---------- 4. Artikel: fade-in stagger saat masuk viewport ---------- */
+  if (isHome) {
+    var cards = gsap.utils.toArray("[data-article-card]");
+    if (cards.length) {
+      gsap.set(cards, { y: 36, autoAlpha: 0 });
+      ScrollTrigger.batch(cards, {
+        start: "top 85%",
+        once: true,
+        onEnter: function (batch) {
+          gsap.to(batch, {
+            y: 0,
+            autoAlpha: 1,
+            duration: DUR,
+            ease: EASE,
+            stagger: 0.12
           });
-        }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
-        allTargets.forEach(el => obs.observe(el));
-      } else {
-        allTargets.forEach(el => el.classList.add("is-visible"));
-      }
+        }
+      });
     }
   }
 
-  // --- Efek ketik (typing) pada judul hero ---
-  const typingEl = document.querySelector("[data-typing]");
-  if (typingEl && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    const fullText = typingEl.textContent.trim();
-    typingEl.style.minHeight = typingEl.offsetHeight + "px";
-    typingEl.textContent = "";
-    const cursor = document.createElement("span");
-    cursor.className = "type-cursor";
-    cursor.setAttribute("aria-hidden", "true");
-    typingEl.appendChild(cursor);
-
-    let i = 0;
-    (function typeNext() {
-      if (i < fullText.length) {
-        cursor.insertAdjacentText("beforebegin", fullText.charAt(i));
-        i++;
-        setTimeout(typeNext, 70 + Math.random() * 60);
-      } else {
-        setTimeout(() => cursor.remove(), 1800);
-      }
-    })();
-  }
-
-  // --- Header transparan -> kaca saat di-scroll + bar progres scroll ---
-  const header = document.querySelector(".site-header");
-  const progress = document.getElementById("scrollProgress");
-  let ticking = false;
-  function onScrollChrome() {
-    const y = window.scrollY || document.documentElement.scrollTop || 0;
-    if (header) header.classList.toggle("is-scrolled", y > 12);
-    if (progress) {
-      const h = document.documentElement;
-      const max = h.scrollHeight - h.clientHeight;
-      progress.style.width = (max > 0 ? (y / max) * 100 : 0) + "%";
+  /* ---------- Halaman lain: reveal ringan satu arah ---------- */
+  if (!isHome) {
+    var items = gsap.utils.toArray(
+      ".card-grid .card, .article-list .article-item, .price-card, .stat, .timeline-item"
+    );
+    if (items.length) {
+      gsap.set(items, { y: 24, autoAlpha: 0 });
+      ScrollTrigger.batch(items, {
+        start: "top 88%",
+        once: true,
+        onEnter: function (batch) {
+          gsap.to(batch, {
+            y: 0,
+            autoAlpha: 1,
+            duration: 0.8,
+            ease: EASE,
+            stagger: 0.08
+          });
+        }
+      });
     }
-    ticking = false;
   }
-  window.addEventListener("scroll", function () {
-    if (!ticking) { window.requestAnimationFrame(onScrollChrome); ticking = true; }
-  }, { passive: true });
-  onScrollChrome();
+
+  // Refresh setelah semua aset (font/gambar) siap — ukuran track akurat.
+  window.addEventListener("load", function () { ScrollTrigger.refresh(); });
 })();

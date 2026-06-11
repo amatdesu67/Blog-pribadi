@@ -1,262 +1,124 @@
-/* =====================================================================
-   hero3d.js — Latar 3D sinematik (Three.js r170 + three-vrm v3, ES module)
-   - Starfield partikel emas (parallax mouse + scroll).
-   - Karakter VRM 1.0 (Chizuru.min.vrm): pose TENANG tangan di belakang
-     (statis + napas halus) -> elegan, tanpa clip yg stretch. Senyum tipis & kedip/wink.
-   - Karakter MEMUDAR saat scroll biar nggak nabrak konten.
-   - Loader % saat model dimuat. Lazy-load. Reduced-motion: render diam.
-   ===================================================================== */
-import * as THREE from "three";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { VRMLoaderPlugin, VRMUtils, VRMHumanBoneName } from "@pixiv/three-vrm";
+// public/js/hero3d.js — Objek 3D subtle di hero (Three.js, ES module).
+// Low-poly icosahedron wireframe, rotasi pelan mengikuti mouse (lerp).
+// rAF di-pause saat tab tidak aktif. Tidak diinisialisasi di mobile /
+// prefers-reduced-motion (hemat baterai + Lighthouse).
 
-const canvas = document.getElementById("bg3d");
+const canvas = document.getElementById("hero3d");
+const isMobile = window.matchMedia("(max-width: 768px)").matches;
+const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-let isMobile = window.matchMedia("(max-width: 860px)").matches;
-const isLight = () => document.documentElement.getAttribute("data-theme") === "light";
-const hideLoader = () => { const l = document.getElementById("vrmLoading"); if (l) l.classList.add("is-hidden"); };
-
-const VRM_URL = "/Chizuru.min.vrm";
-
-// Ekspresi (mudah disetel). happy = senyum tp buka mulut; relaxed = lembut/tertutup.
-const SMILE_RELAX = 0.55;
-const SMILE_HAPPY = 0.08;
-
-// Pose "tangan di belakang" (mudah disetel):
-const ARM_DOWN = 1.25;  // lengan atas turun nempel badan (z)
-const ARM_BACK = 0.45;  // putar lengan atas ke BELAKANG (y)
-const ELBOW    = -1.5;  // tekuk siku ke BELAKANG (tangan ketemu di belakang punggung)
-
-let renderer, scene, camera, particles, raf = 0;
-let vrm = null, entrance = 0;
-let vrmMats = [];
-let spine = null, chest = null;
-let rShoulder = null, rUpperArm = null, rLowerArm = null, rHand = null;
-let lShoulder = null, lUpperArm = null, lLowerArm = null, lHand = null;
-const clock = new THREE.Clock();
-const mouse = { x: 0, y: 0 }, target = { x: 0, y: 0 };
-let scrollY = window.scrollY || 0;
-const hasHero = !!document.querySelector(".hero");
-const t0 = performance.now();
-let nextBlink = 1.5 + Math.random() * 2.5, blinkVal = 0, winkMode = false;
-
-function basePos() {
-  return { x: isMobile ? 0 : 1.8, y: isMobile ? -3.0 : -8.6, s: isMobile ? 2.9 : 7.0 };
+if (canvas && !isMobile && !reduced) {
+  init();
+} else if (canvas) {
+  canvas.remove(); // fallback: hero polos, tetap elegan
 }
 
-function init() {
-  renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isMobile });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
-  renderer.setSize(window.innerWidth, window.innerHeight, false);
-  if ("outputColorSpace" in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
+async function init() {
+  const THREE = await import("three");
 
-  scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-  camera.position.z = 9;
+  const scene = new THREE.Scene();
 
-  buildParticles();
+  const camera = new THREE.PerspectiveCamera(
+    45, window.innerWidth / window.innerHeight, 0.1, 50
+  );
+  camera.position.z = 7;
 
-  scene.add(new THREE.AmbientLight(0xffffff, isLight() ? 0.7 : 0.45));
-  scene.add(new THREE.HemisphereLight(0xfff3d6, 0x1a1a22, isLight() ? 0.6 : 0.5));
-  const key = new THREE.DirectionalLight(0xffe7b8, 2.0); key.position.set(4, 5, 6); scene.add(key);
-  const rim = new THREE.PointLight(0x9fb4ff, 2.4, 70); rim.position.set(-6, 2, -5); scene.add(rim);
-  const fill = new THREE.DirectionalLight(0xffffff, 0.6); fill.position.set(-2, 0, 8); scene.add(fill);
-
-  if (hasHero) {
-    const startLoad = () => loadCharacter();
-    if ("requestIdleCallback" in window) requestIdleCallback(startLoad, { timeout: 1500 });
-    else setTimeout(startLoad, 300);
-  } else {
-    hideLoader();
-  }
-
-  window.addEventListener("resize", onResize, { passive: true });
-  window.addEventListener("scroll", () => { scrollY = window.scrollY || 0; }, { passive: true });
-  if (!reduce && !isMobile) {
-    window.addEventListener("mousemove", (e) => {
-      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = (e.clientY / window.innerHeight) * 2 - 1;
-    }, { passive: true });
-  }
-  new MutationObserver(() => { if (particles) particles.material.opacity = isLight() ? 0.55 : 0.9; })
-    .observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-  document.addEventListener("visibilitychange", () => { if (document.hidden) stop(); else play(); });
-
-  requestAnimationFrame(() => canvas.classList.add("is-ready"));
-  if (reduce) renderOnce(); else play();
-}
-
-function buildParticles() {
-  const COUNT = isMobile ? 700 : 1700;
-  const geo = new THREE.BufferGeometry();
-  const pos = new Float32Array(COUNT * 3);
-  const col = new Float32Array(COUNT * 3);
-  const gold = new THREE.Color(0xe7c878), pale = new THREE.Color(0xfff4d6), blue = new THREE.Color(0x8a93c8);
-  for (let i = 0; i < COUNT; i++) {
-    const i3 = i * 3;
-    pos[i3] = (Math.random() - 0.5) * 34;
-    pos[i3 + 1] = (Math.random() - 0.5) * 22;
-    pos[i3 + 2] = (Math.random() - 0.5) * 22 - 4;
-    const r = Math.random();
-    const c = r < 0.7 ? gold : (r < 0.9 ? pale : blue);
-    col[i3] = c.r; col[i3 + 1] = c.g; col[i3 + 2] = c.b;
-  }
-  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-  geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
-  const mat = new THREE.PointsMaterial({
-    size: isMobile ? 0.05 : 0.045, vertexColors: true, transparent: true,
-    opacity: isLight() ? 0.55 : 0.9, depthWrite: false,
-    blending: THREE.AdditiveBlending, sizeAttenuation: true,
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    alpha: true,
+    antialias: true,
+    powerPreference: "low-power"
   });
-  particles = new THREE.Points(geo, mat);
-  scene.add(particles);
-}
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
 
-async function loadCharacter() {
-  const loader = new GLTFLoader();
-  loader.register((p) => new VRMLoaderPlugin(p));
+  // --- Objek utama: icosahedron low-poly, dua lapis (solid gelap + wireframe) ---
+  const group = new THREE.Group();
 
-  try {
-    const gltf = await loader.loadAsync(VRM_URL, (e) => {
-      if (e && e.total) {
-        const el = document.getElementById("vrmLoadingPct");
-        if (el) el.textContent = Math.round((e.loaded / e.total) * 100) + "%";
-      }
-    });
+  const geo = new THREE.IcosahedronGeometry(2.1, 1);
+  const solid = new THREE.Mesh(
+    geo,
+    new THREE.MeshStandardMaterial({
+      color: 0x111114,
+      roughness: 0.35,
+      metalness: 0.8,
+      flatShading: true
+    })
+  );
+  const wire = new THREE.Mesh(
+    geo,
+    new THREE.MeshBasicMaterial({
+      color: 0x86868b,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.22
+    })
+  );
+  wire.scale.setScalar(1.003);
+  group.add(solid, wire);
+  group.position.set(0, 0.2, 0);
+  scene.add(group);
 
-    vrm = gltf.userData.vrm;
-    if (!vrm) { console.error("userData.vrm kosong"); hideLoader(); return; }
+  // --- Cahaya minimal ---
+  scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+  const key = new THREE.DirectionalLight(0xffffff, 1.6);
+  key.position.set(4, 6, 5);
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0x2997ff, 0.5);
+  rim.position.set(-6, -2, -4);
+  scene.add(rim);
 
-    try { VRMUtils.removeUnnecessaryVertices(gltf.scene); } catch (e) {}
-    try { VRMUtils.combineSkeletons(gltf.scene); } catch (e) {}
+  // --- Mouse follow (lerp halus) ---
+  let targetX = 0, targetY = 0;
+  window.addEventListener("pointermove", (e) => {
+    targetX = (e.clientX / window.innerWidth - 0.5) * 2;   // -1..1
+    targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+  }, { passive: true });
 
-    vrmMats = [];
-    vrm.scene.traverse((o) => {
-      if (o.isMesh) {
-        o.frustumCulled = false;
-        const arr = Array.isArray(o.material) ? o.material : [o.material];
-        for (const m of arr) { if (m) { m.userData._ot = m.transparent; vrmMats.push(m); } }
-      }
-    });
+  // --- Loop: pause saat tab hidden ---
+  let rafId = null;
+  let running = false;
+  const clock = new THREE.Clock();
 
-    try {
-      const HB = VRMHumanBoneName, gb = (n) => vrm.humanoid.getNormalizedBoneNode(n);
-      spine = gb(HB.Spine); chest = gb(HB.Chest);
-      rShoulder = gb(HB.RightShoulder); rUpperArm = gb(HB.RightUpperArm); rLowerArm = gb(HB.RightLowerArm); rHand = gb(HB.RightHand);
-      lShoulder = gb(HB.LeftShoulder); lUpperArm = gb(HB.LeftUpperArm); lLowerArm = gb(HB.LeftLowerArm); lHand = gb(HB.LeftHand);
-    } catch (e) {}
+  function tick() {
+    rafId = requestAnimationFrame(tick);
+    const t = clock.getElapsedTime();
 
-    const bp = basePos();
-    vrm.scene.position.set(bp.x, bp.y, 0);
-    vrm.scene.scale.setScalar(bp.s);
-    vrm.scene.rotation.y = 0;
-    scene.add(vrm.scene);
+    // rotasi dasar pelan + pengaruh mouse (lerp 5%)
+    group.rotation.y += ((targetX * 0.45 + t * 0.08) - group.rotation.y) * 0.05;
+    group.rotation.x += ((targetY * 0.3) - group.rotation.x) * 0.05;
+    group.position.y = 0.2 + Math.sin(t * 0.5) * 0.08; // napas halus
 
-    hideLoader();
-    if (reduce) { poseBehindBack(0); vrm.update(0); renderOnce(); }
-  } catch (err) {
-    console.error("Gagal memuat VRM:", err);
-    hideLoader();
-  }
-}
-
-function poseBehindBack(t) {
-  const br = Math.sin((t || 0) * 1.3); // napas
-  if (spine) spine.rotation.set(br * 0.012, 0, 0);
-  if (chest) chest.rotation.set(br * 0.008, 0, 0);
-  // kanan
-  if (rShoulder) rShoulder.rotation.set(0, 0, 0);
-  if (rUpperArm) rUpperArm.rotation.set(0, ARM_BACK, ARM_DOWN + br * 0.03);
-  if (rLowerArm) rLowerArm.rotation.set(0, ELBOW, 0);
-  if (rHand) rHand.rotation.set(0, 0, 0);
-  // kiri (mirror)
-  if (lShoulder) lShoulder.rotation.set(0, 0, 0);
-  if (lUpperArm) lUpperArm.rotation.set(0, -ARM_BACK, -ARM_DOWN - br * 0.03);
-  if (lLowerArm) lLowerArm.rotation.set(0, -ELBOW, 0);
-  if (lHand) lHand.rotation.set(0, 0, 0);
-}
-
-function onResize() {
-  if (!renderer) return;
-  isMobile = window.matchMedia("(max-width: 860px)").matches;
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight, false);
-  if (vrm) {
-    const bp = basePos();
-    vrm.scene.position.set(bp.x, bp.y, 0);
-    vrm.scene.scale.setScalar(bp.s);
-  }
-  if (reduce) renderOnce();
-}
-
-function setCharFade(cf) {
-  const fading = cf < 0.99;
-  for (let i = 0; i < vrmMats.length; i++) {
-    const m = vrmMats[i];
-    if (fading) { m.transparent = true; m.opacity = cf; m.depthWrite = false; }
-    else { m.transparent = m.userData._ot; m.opacity = 1; m.depthWrite = true; }
-  }
-}
-
-function frame(now) {
-  const t = (now - t0) * 0.001;
-  const dt = clock.getDelta();
-  target.x += (mouse.x - target.x) * 0.05;
-  target.y += (mouse.y - target.y) * 0.05;
-
-  if (particles) {
-    particles.rotation.y = t * 0.02 + target.x * 0.25;
-    particles.rotation.x = target.y * 0.15 - scrollY * 0.00012;
-    particles.position.y = scrollY * 0.0011;
+    renderer.render(scene, camera);
   }
 
-  if (vrm) {
-    poseBehindBack(t);
-
-    const em = vrm.expressionManager;
-    if (em) {
-      em.setValue("happy", SMILE_HAPPY);
-      em.setValue("relaxed", SMILE_RELAX);
-      nextBlink -= dt;
-      if (nextBlink <= 0) { blinkVal = 1; nextBlink = 2.4 + Math.random() * 3.2; winkMode = Math.random() < 0.4; }
-      blinkVal += (0 - blinkVal) * Math.min(1, dt * 11);
-      if (winkMode) { em.setValue("blinkLeft", blinkVal); em.setValue("blink", 0); }
-      else { em.setValue("blink", blinkVal); em.setValue("blinkLeft", 0); }
-    }
-
-    let cf = 1 - scrollY / (window.innerHeight * 0.5);
-    cf = Math.max(0, Math.min(1, cf));
-    vrm.scene.visible = cf > 0.01;
-    setCharFade(cf);
-
-    entrance += (1 - entrance) * Math.min(1, dt * 2.2);
-    const bp = basePos();
-    vrm.scene.scale.setScalar(bp.s * (0.92 + 0.08 * entrance));
-    vrm.scene.position.x = bp.x;
-    vrm.scene.position.y = bp.y - scrollY * 0.002 + (1 - entrance) * -0.5;
-    vrm.update(dt);
+  function start() {
+    if (running) return;
+    running = true;
+    clock.start();
+    tick();
+  }
+  function stop() {
+    if (!running) return;
+    running = false;
+    cancelAnimationFrame(rafId);
+    clock.stop();
   }
 
-  camera.position.x += (target.x * 0.6 - camera.position.x) * 0.05;
-  camera.position.y += (-target.y * 0.4 - camera.position.y) * 0.05;
-  camera.lookAt(0, 0, 0);
+  document.addEventListener("visibilitychange", () => {
+    document.hidden ? stop() : start();
+  });
 
-  renderer.render(scene, camera);
-  raf = requestAnimationFrame(frame);
-}
+  // Bonus efisiensi: berhenti juga saat hero keluar dari viewport.
+  new IntersectionObserver((entries) => {
+    entries[0].isIntersecting && !document.hidden ? start() : stop();
+  }, { threshold: 0 }).observe(canvas);
 
-function renderOnce() {
-  if (!renderer) return;
-  if (particles) particles.rotation.y = 0.2;
-  renderer.render(scene, camera);
-}
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
 
-function play() { if (!reduce && !raf) raf = requestAnimationFrame(frame); }
-function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
-
-if (canvas) {
-  try { init(); }
-  catch (e) { console.error("Init hero3d gagal:", e); hideLoader(); canvas.style.display = "none"; }
+  start();
 }

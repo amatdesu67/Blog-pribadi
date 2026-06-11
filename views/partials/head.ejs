@@ -1,53 +1,24 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="id">
 <head>
-  <script>
-    window.addEventListener('error', function(e) {
-      fetch('/client-log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'error',
-          message: e.message,
-          source: e.filename,
-          line: e.lineno,
-          column: e.colno,
-          error: e.error ? e.error.stack : null
-        })
-      });
-    });
-    window.addEventListener('unhandledrejection', function(e) {
-      fetch('/client-log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'unhandledrejection',
-          message: e.reason ? e.reason.message : 'Unknown rejection',
-          reason: String(e.reason),
-          error: e.reason && e.reason.stack ? e.reason.stack : null
-        })
-      });
-    });
-  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <%
-    // Deskripsi bisa di-override per halaman lewat variabel `pageDescription`.
     const desc = typeof pageDescription !== "undefined"
       ? pageDescription
-      : "Blog & portofolio pribadi Ahmad Riza Rudi — siswa SMK TKJ yang belajar ngoding & menulis.";
+      : "Blog & portofolio pribadi Ahmad Riza Rudi — web developer & penulis.";
     const pageTitle = title + " — Ahmad Riza Rudi";
     const url = typeof canonical !== "undefined" ? canonical : "";
-    // Gambar preview (Open Graph). Pakai URL absolut karena WA/FB butuh itu.
     const ogImage = (typeof siteUrl !== "undefined" ? siteUrl : "") + "/og-image.png";
+    const isHome = typeof active !== "undefined" && active === "home";
   %>
   <title><%= pageTitle %></title>
   <meta name="description" content="<%= desc %>" />
-  <meta name="theme-color" content="#070709" />
+  <meta name="theme-color" content="#0a0a0a" />
   <% if (url) { %><link rel="canonical" href="<%= url %>" /><% } %>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-  <!-- Open Graph / Twitter (preview saat link dibagikan ke WA, IG, dll) -->
+  <!-- Open Graph / Twitter -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Ahmad Riza Rudi" />
   <meta property="og:title" content="<%= pageTitle %>" />
@@ -61,44 +32,59 @@
   <meta name="twitter:description" content="<%= desc %>" />
   <meta name="twitter:image" content="<%= ogImage %>" />
 
+  <!-- Font: Inter (pengganti SF Pro) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 
-  <!-- Pasang tema sebelum halaman tampil supaya tidak 'kedip' (anti-FOUC).
-       Default: dark luxe. Pilihan pengguna (localStorage) tetap dihormati. -->
+  <!-- Logger error client-side (dipertahankan dari versi lama) -->
   <script>
-    (function () {
+    window.addEventListener("error", function (e) {
       try {
-        var t = localStorage.getItem("theme");
-        if (t !== "light" && t !== "dark") t = "dark";
-        document.documentElement.setAttribute("data-theme", t);
-      } catch (e) {}
+        fetch("/client-log", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "error", message: e.message, source: e.filename,
+            line: e.lineno, column: e.colno,
+            error: e.error ? e.error.stack : null
+          })
+        });
+      } catch (_) {}
+    });
+    window.addEventListener("unhandledrejection", function (e) {
       try {
-        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          document.documentElement.classList.add("reveal-ready");
-        }
-      } catch (e) {}
-    })();
+        fetch("/client-log", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "unhandledrejection",
+            message: e.reason ? e.reason.message : "Unknown rejection",
+            reason: String(e.reason),
+            error: e.reason && e.reason.stack ? e.reason.stack : null
+          })
+        });
+      } catch (_) {}
+    });
   </script>
 
-  <!-- Import map untuk Three.js r170 + three-vrm v3 + three-vrm-animation (ES modules).
-       Dipakai oleh /js/hero3d.js (type=module) untuk render karakter + animasi VRMA. -->
+  <!-- Animasi: GSAP + ScrollTrigger + Lenis (defer — non-blocking) -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+
+  <% if (isHome) { %>
+  <!-- Three.js hanya di Beranda (hero 3D). Module = otomatis deferred. -->
   <script type="importmap">
   {
     "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
-      "@pixiv/three-vrm": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@3.1.3/lib/three-vrm.module.min.js",
-      "@pixiv/three-vrm-animation": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm-animation@3.1.2/lib/three-vrm-animation.module.min.js"
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
     }
   }
   </script>
+  <% } %>
 </head>
-<body>
-  <!-- Bar progres scroll & panggung 3D global -->
-  <div class="scroll-progress" id="scrollProgress"></div>
-  <canvas id="bg3d" aria-hidden="true"></canvas>
+<body<% if (isHome) { %> class="is-home"<% } %>>
