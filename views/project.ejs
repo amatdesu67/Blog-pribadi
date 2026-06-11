@@ -5,22 +5,70 @@
   <a href="/projects" class="back-link">&larr; Semua proyek</a>
 
   <div class="page-hero" style="padding-top: 0;">
-    <span class="badge"><%= project.type %> &middot; <%= project.year %></span>
+    <div class="tag-row" style="margin-bottom: 1rem;">
+      <% if (project.featuredMain) { %><span class="badge badge-featured">Featured Project</span><% } %>
+      <span class="badge"><%= project.type %> &middot; <%= project.year %></span>
+    </div>
     <h1><%= project.title %></h1>
     <p class="page-lead"><%= project.tagline %></p>
   </div>
 
-  <div class="prose"><%- descriptionHtml %></div>
-
-  <div class="tag-row">
-    <% project.tags.forEach(function (t) { %><span class="tag"><%= t %></span><% }) %>
+  <% if (project.problem) { %>
+  <!-- Studi kasus: masalah → solusi → tantangan -->
+  <div class="case-grid">
+    <section class="case-block">
+      <h2 class="section-label">$ masalah</h2>
+      <p><%= project.problem %></p>
+    </section>
+    <section class="case-block">
+      <h2 class="section-label">$ solusi</h2>
+      <p><%= project.solution %></p>
+    </section>
+    <section class="case-block">
+      <h2 class="section-label">$ tantangan-utama</h2>
+      <p><%= project.challenge %></p>
+    </section>
   </div>
+  <% } %>
+
+  <% if (project.flow && project.flow.length) { %>
+  <!-- Diagram cara kerja (khusus featured) -->
+  <section class="section-block">
+    <h2 class="section-label">$ cara-kerja</h2>
+    <ol class="flow">
+      <% project.flow.forEach(function (f, i) { %>
+        <li class="flow-step">
+          <span class="flow-num"><%= String(i + 1).padStart(2, "0") %></span>
+          <strong><%= f.step %></strong>
+          <p><%= f.desc %></p>
+        </li>
+      <% }) %>
+    </ol>
+  </section>
+  <% } %>
+
+  <section class="section-block">
+    <h2 class="section-label">$ cerita</h2>
+    <div class="prose"><%- descriptionHtml %></div>
+  </section>
+
+  <% if (project.stack) { %>
+  <section class="section-block">
+    <h2 class="section-label">$ tech-stack</h2>
+    <div class="tag-row">
+      <% project.stack.forEach(function (t) { %><span class="tag"><%= t %></span><% }) %>
+    </div>
+  </section>
+  <% } %>
 
   <div class="project-actions">
     <% if (project.internal) { %>
       <a class="btn btn-primary" href="<%= project.url %>">Baca online</a>
     <% } else { %>
-      <a class="btn btn-primary" href="<%= project.url %>" target="_blank" rel="noopener">Kunjungi demo</a>
+      <a class="btn btn-primary" href="<%= project.url %>" target="_blank" rel="noopener">Lihat demo live</a>
+    <% } %>
+    <% if (project.repo) { %>
+      <a class="btn btn-ghost" href="<%= project.repo %>" target="_blank" rel="noopener">Source code</a>
     <% } %>
     <a class="btn btn-ghost" href="/contact">Mau dibikinin yang mirip?</a>
   </div>

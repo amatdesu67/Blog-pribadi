@@ -1,0 +1,50 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main class="container page">
+  <div class="page-hero">
+    <p class="section-label">~/now</p>
+    <h1>Lagi ngapain sekarang.</h1>
+    <p class="page-lead">
+      Snapshot hidup gw saat ini — biar website ini kerasa hidup, bukan museum.
+      Terakhir di-update: <span class="now-updated"><%= now.updated %></span>
+    </p>
+  </div>
+
+  <div class="now-grid">
+    <section class="now-block">
+      <h2 class="section-label">$ belajar</h2>
+      <ul class="now-list">
+        <% now.learning.forEach(function (x) { %><li><%= x %></li><% }) %>
+      </ul>
+    </section>
+
+    <section class="now-block">
+      <h2 class="section-label">$ membangun</h2>
+      <ul class="now-list">
+        <% now.building.forEach(function (x) { %><li><%= x %></li><% }) %>
+      </ul>
+    </section>
+
+    <section class="now-block">
+      <h2 class="section-label">$ target-bulan-ini</h2>
+      <ul class="now-list">
+        <% now.targets.forEach(function (x) { %><li><%= x %></li><% }) %>
+      </ul>
+    </section>
+
+    <section class="now-block">
+      <h2 class="section-label">$ santai</h2>
+      <ul class="now-list">
+        <li>Baca: <%= now.reading %></li>
+        <li>Nonton: <%= now.watching %></li>
+      </ul>
+    </section>
+  </div>
+
+  <p class="muted" style="margin-top: 3rem;">
+    Terinspirasi gerakan <a class="u-line" href="https://nownownow.com/about" target="_blank" rel="noopener">/now page</a>.
+  </p>
+</main>
+
+<%- include('partials/footer') %>

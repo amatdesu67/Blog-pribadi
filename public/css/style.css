@@ -1108,3 +1108,124 @@ body::after {
 .fetch-card { text-align: left; }
 h2.toc-title { display: block; border-bottom: none; padding: 0; margin-top: 2.5rem; }
 .contact-page-wrap .contact-page { margin-top: 1rem; }
+
+/* =====================================================================
+   LAYER 3 — ROADMAP V2 (hero stats, case study, flow, now, changelog)
+   ===================================================================== */
+
+/* Hero stats */
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: clamp(2rem, 5vw, 4rem);
+  margin-top: 3rem;
+}
+.hstat { text-align: center; }
+.hstat strong {
+  display: block;
+  font-family: var(--mono);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.hstat span { color: var(--muted); font-size: 0.82rem; }
+
+/* Badge featured */
+.badge-featured {
+  border-color: transparent;
+  background: var(--aurora);
+  color: #fff;
+}
+
+/* Studi kasus */
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin: 1.5rem 0 3rem;
+}
+.case-block {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+}
+.case-block p { color: var(--muted); font-size: 0.975rem; }
+.case-block .section-label { margin-bottom: 0.75rem; }
+
+/* Flow diagram (cara kerja) */
+.flow {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  counter-reset: flow;
+}
+.flow-step {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.25rem 1rem;
+}
+.flow-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-2);
+  z-index: 1;
+}
+.flow-num {
+  font-family: var(--mono);
+  color: #7b61ff;
+  font-size: 0.78rem;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.flow-step strong { display: block; font-size: 0.95rem; margin-bottom: 0.3rem; }
+.flow-step p { color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
+
+/* Now page */
+.now-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+.now-block {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+}
+.now-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+.now-list li { color: var(--muted); padding-left: 1.2rem; position: relative; }
+.now-list li::before { content: ">"; position: absolute; left: 0; color: #7b61ff; font-family: var(--mono); }
+.now-updated { font-family: var(--mono); color: var(--fg); }
+
+/* Changelog */
+.changelog { max-width: 720px; }
+.release { padding: 2rem 0; border-bottom: 1px solid var(--line); }
+.release-head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1rem; }
+.release-ver {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 1.3rem;
+  background: var(--aurora);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.release-date { font-family: var(--mono); color: var(--muted-2); font-size: 0.82rem; }
+.release-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+.release-list li { color: var(--muted); padding-left: 1.2rem; position: relative; }
+.release-list li::before { content: "+"; position: absolute; left: 0; color: #30d158; font-family: var(--mono); }
+
+@media (max-width: 880px) {
+  .case-grid { grid-template-columns: 1fr; }
+  .flow { grid-template-columns: 1fr; }
+  .flow-step:not(:last-child)::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -1.05rem; transform: translateX(-50%); }
+  .now-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 1.5rem; }
+}

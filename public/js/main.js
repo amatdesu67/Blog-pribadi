@@ -271,3 +271,23 @@
     });
   }
 })();
+
+/* ---------- Hero stats: count-up sekali saat load ---------- */
+(function () {
+  "use strict";
+  var els = document.querySelectorAll("[data-count]");
+  if (!els.length) return;
+  els.forEach(function (el) {
+    var target = parseInt(el.getAttribute("data-count"), 10) || 0;
+    var t0 = null;
+    var DUR = 1400;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      var p = Math.min(1, (ts - t0) / DUR);
+      var eased = 1 - Math.pow(1 - p, 3); // power3.out
+      el.textContent = Math.round(eased * target);
+      if (p < 1) requestAnimationFrame(step);
+    }
+    setTimeout(function () { requestAnimationFrame(step); }, 600);
+  });
+})();

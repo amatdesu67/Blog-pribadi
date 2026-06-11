@@ -1,0 +1,26 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<main class="container page">
+  <div class="page-hero">
+    <p class="section-label">~/changelog</p>
+    <h1>Riwayat website ini.</h1>
+    <p class="page-lead">Website ini juga produk — dan produk yang hidup punya riwayat rilis.</p>
+  </div>
+
+  <div class="changelog">
+    <% changelog.forEach(function (rel) { %>
+      <section class="release">
+        <div class="release-head">
+          <span class="release-ver">v<%= rel.version %></span>
+          <time class="release-date"><%= rel.date %></time>
+        </div>
+        <ul class="release-list">
+          <% rel.changes.forEach(function (c) { %><li><%= c %></li><% }) %>
+        </ul>
+      </section>
+    <% }) %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

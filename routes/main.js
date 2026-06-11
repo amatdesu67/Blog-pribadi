@@ -1,16 +1,17 @@
 // routes/main.js
-// Route halaman utama: Beranda, Tentang, dan Kontak (tampil + proses form).
-// Handler-nya async karena akses database (libSQL) bersifat asynchronous.
+// Route halaman utama: Beranda, Tentang, Jasa, Now, Changelog, Kontak.
 
 const express = require("express");
 const router = express.Router();
 
 const { projects } = require("../data/projects");
-const { ebook } = require("../content/ebook");
+const { ebook, chapters } = require("../content/ebook");
 const { getAllArticles } = require("../content/blog");
+const { now } = require("../data/now");
+const { changelog } = require("../data/changelog");
 const { addMessage } = require("../db/database");
 
-// Beranda: proyek unggulan + 3 artikel terbaru + sorotan ebook.
+// Beranda: proyek unggulan + statistik + 3 artikel terbaru + ebook.
 router.get("/", async (req, res, next) => {
   try {
     const articles = await getAllArticles();
@@ -20,6 +21,11 @@ router.get("/", async (req, res, next) => {
       projects: projects.filter((p) => p.featured),
       articles: articles.slice(0, 3),
       ebook,
+      stats: {
+        projects: projects.length,
+        articles: articles.length,
+        chapters: chapters.length,
+      },
     });
   } catch (err) {
     next(err);
@@ -31,9 +37,18 @@ router.get("/about", (req, res) => {
   res.render("about", { title: "Tentang", active: "about" });
 });
 
-// Halaman Jasa (hire me): daftar layanan + harga + CTA.
+// Halaman Now: apa yang lagi dikerjain sekarang.
+router.get("/now", (req, res) => {
+  res.render("now", { title: "Now", active: "now", now });
+});
+
+// Halaman Changelog: riwayat perubahan website.
+router.get("/changelog", (req, res) => {
+  res.render("changelog", { title: "Changelog", active: "", changelog });
+});
+
+// Halaman Jasa (hire me).
 router.get("/jasa", (req, res) => {
-  // Tampilkan beberapa proyek sebagai bukti nyata di bagian portfolio.
   const showcase = projects.filter((p) => !p.internal).slice(0, 3);
   res.render("jasa", { title: "Jasa", active: "jasa", showcase });
 });
@@ -49,17 +64,12 @@ router.get("/contact", (req, res) => {
   });
 });
 
-// Proses form Kontak: validasi sederhana, lalu simpan ke database.
+// Proses form Kontak.
 router.post("/contact", async (req, res, next) => {
-  // Honeypot: field "website" tersembunyi dari manusia. Kalau terisi, hampir
-  // pasti bot -> pura-pura sukses, tapi jangan simpan ke database.
+  // Honeypot anti-bot.
   if ((req.body.website || "").trim() !== "") {
     return res.render("contact", {
-      title: "Kontak",
-      active: "contact",
-      sent: true,
-      errors: [],
-      values: {},
+      title: "Kontak", active: "contact", sent: true, errors: [], values: {},
     });
   }
 
@@ -74,10 +84,7 @@ router.post("/contact", async (req, res, next) => {
 
   if (errors.length > 0) {
     return res.status(400).render("contact", {
-      title: "Kontak",
-      active: "contact",
-      sent: false,
-      errors,
+      title: "Kontak", active: "contact", sent: false, errors,
       values: { name, email, message },
     });
   }
@@ -85,11 +92,7 @@ router.post("/contact", async (req, res, next) => {
   try {
     await addMessage({ name, email, message });
     res.render("contact", {
-      title: "Kontak",
-      active: "contact",
-      sent: true,
-      errors: [],
-      values: {},
+      title: "Kontak", active: "contact", sent: true, errors: [], values: {},
     });
   } catch (err) {
     next(err);

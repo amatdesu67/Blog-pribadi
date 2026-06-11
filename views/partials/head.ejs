@@ -6,8 +6,8 @@
   <%
     const desc = typeof pageDescription !== "undefined"
       ? pageDescription
-      : "Blog & portofolio pribadi Ahmad Riza Rudi — web developer & penulis.";
-    const pageTitle = title + " — Ahmad Riza Rudi";
+      : "Portfolio, project, artikel, dan eksperimen digital Ahmad Riza Rudi — Web Developer & AI Builder.";
+    const pageTitle = title + " — Ahmad Riza Rudi · Web Developer & AI Builder";
     const url = typeof canonical !== "undefined" ? canonical : "";
     const ogImage = (typeof siteUrl !== "undefined" ? siteUrl : "") + "/og-image.png";
     const isHome = typeof active !== "undefined" && active === "home";
@@ -86,5 +86,22 @@
   }
   </script>
   <% } %>
+
+  <!-- Structured data: identitas (SEO) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Ahmad Riza Rudi",
+    "url": "<%= typeof siteUrl !== "undefined" ? siteUrl : "" %>",
+    "jobTitle": "Web Developer & AI Builder",
+    "description": "Web developer, AI builder, dan penulis digital yang membangun produk nyata dari ide sederhana.",
+    "knowsAbout": ["Node.js", "Express", "JavaScript", "AI", "Critical Thinking"],
+    "sameAs": [
+      "https://www.instagram.com/_watashiamatdesu/",
+      "https://www.tiktok.com/@amat.desuuu"
+    ]
+  }
+  </script>
 </head>
 <body<% if (isHome) { %> class="is-home"<% } %>>

@@ -96,7 +96,7 @@ app.get("/robots.txt", (req, res) => {
 app.get("/sitemap.xml", async (req, res, next) => {
   try {
     const base = res.locals.siteUrl;
-    const staticPaths = ["/", "/about", "/projects", "/blog", "/contact", "/ebook"];
+    const staticPaths = ["/", "/about", "/projects", "/blog", "/contact", "/ebook", "/jasa", "/now", "/changelog"];
     let slugs = [];
     try {
       const articles = await getAllArticles();
