@@ -3,6 +3,14 @@
 
 const changelog = [
   {
+    version: "2.2",
+    date: "2026-06-12",
+    changes: [
+      "7 artikel baru: deploy Vercel, Express pemula, blog Node.js, Nalar, LLM, OpenAlex, GSAP",
+      "Halaman ebook: statistik (bab, halaman, waktu baca) + tombol download PDF",
+    ],
+  },
+  {
     version: "2.1",
     date: "2026-06-11",
     changes: [

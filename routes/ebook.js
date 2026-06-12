@@ -12,13 +12,33 @@ const { renderMarkdown } = require("../lib/markdown");
 // Folder tempat file markdown tiap bab berada.
 const EBOOK_DIR = path.join(__dirname, "..", "content", "ebook");
 
-// Halaman depan ebook: judul + daftar isi.
+// Statistik ebook: jumlah kata semua bab -> estimasi waktu baca.
+// Dihitung sekali saat server start (file tidak berubah saat runtime).
+const ebookStats = (() => {
+  let words = 0;
+  for (const c of chapters) {
+    try {
+      const txt = fs.readFileSync(path.join(EBOOK_DIR, c.file), "utf8");
+      words += txt.split(/\s+/).length;
+    } catch (_) {}
+  }
+  return {
+    chapters: chapters.length,
+    pages: 121, // jumlah halaman PDF
+    minutes: Math.max(1, Math.round(words / 200)),
+    pdfUrl: "/otak-yang-mudah-dibodohi.pdf",
+    pdfSize: "5,4 MB",
+  };
+})();
+
+// Halaman depan ebook: judul + daftar isi + statistik + download.
 router.get("/", (req, res) => {
   res.render("ebook", {
     title: ebook.title,
     active: "projects",
     ebook,
     chapters,
+    stats: ebookStats,
   });
 });
 

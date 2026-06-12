@@ -1229,3 +1229,8 @@ h2.toc-title { display: block; border-bottom: none; padding: 0; margin-top: 2.5r
   .now-grid { grid-template-columns: 1fr; }
   .hero-stats { gap: 1.5rem; }
 }
+
+/* Ebook stats */
+.ebook-stats { display: flex; gap: clamp(1.5rem, 4vw, 3rem); margin-top: 1.75rem; }
+.estat strong { display: block; font-family: var(--mono); font-size: 1.4rem; }
+.estat span { color: var(--muted); font-size: 0.8rem; }

@@ -9,6 +9,17 @@
     <h1><%= ebook.title %></h1>
     <p class="page-lead"><%= ebook.subtitle %></p>
     <p class="muted" style="margin-top: 1rem;"><%= ebook.edition %> &middot; oleh <%= ebook.author %></p>
+
+    <div class="ebook-stats">
+      <div class="estat"><strong><%= stats.chapters %></strong><span>bab</span></div>
+      <div class="estat"><strong><%= stats.pages %></strong><span>halaman</span></div>
+      <div class="estat"><strong>&plusmn;<%= stats.minutes %> mnt</strong><span>waktu baca</span></div>
+    </div>
+
+    <div class="hero-actions" style="justify-content: flex-start; margin-top: 1.75rem;">
+      <a class="btn btn-primary" href="/ebook/<%= chapters[0].slug %>">Baca online</a>
+      <a class="btn btn-ghost" href="<%= stats.pdfUrl %>" download>Download PDF (<%= stats.pdfSize %>)</a>
+    </div>
   </div>
 
   <h2 class="toc-title section-label">~/daftar-isi</h2>
@@ -23,7 +34,6 @@
     <% }) %>
   </ol>
 
-  <a class="btn btn-primary" href="/ebook/<%= chapters[0].slug %>" style="margin-top: 1.5rem;">Mulai baca dari Bab 1</a>
 </main>
 
 <%- include('partials/footer') %>

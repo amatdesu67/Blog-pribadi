@@ -14,7 +14,7 @@ const now = {
     "Nalar v2 — perbaikan skor konsensus",
   ],
   targets: [
-    "Publish 2 artikel coding bulan ini",
+    "Nambah artikel sampai 15 total (sekarang 10)",
     "Nambah studi kasus lengkap di tiap proyek",
   ],
   reading: "Thinking, Fast and Slow — Daniel Kahneman",
